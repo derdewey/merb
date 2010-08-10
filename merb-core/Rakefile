@@ -5,6 +5,8 @@ require "rake/testtask"
 require "spec/rake/spectask"
 require "fileutils"
 
+$:.unshift(File.dirname(__FILE__))
+
 # Load code annotation support library
 require File.expand_path("../tools/annotation_extract", __FILE__)
 
@@ -108,7 +110,7 @@ task "specs:core_ext" do
   run_specs("spec/public/core_ext/*_spec.rb", "spec", "-c -f o")
 end
 
-task "spec"           => ["specs:mri"]
+# task "spec"           => ["specs:mri"]
 task "specs"          => ["specs:mri"]
 task "specs:private"  => ["specs:mri:private"]
 task "specs:public"   => ["specs:mri:public"]
@@ -132,9 +134,7 @@ desc "Run a specific spec with TASK=xxxx"
 Spec::Rake::SpecTask.new("spec") do |t|
   t.spec_opts = ["--colour"]
   t.libs = ["lib", "server/lib" ]
-  t.spec_files = (ENV["TASK"] || '').split(',').map do |task|
-    "spec/**/#{task}_spec.rb"
-  end
+  t.spec_files = FileList.new("spec/**/#{ENV["TASK"]}_spec.rb")
 end
 
 desc "Run all specs output html"

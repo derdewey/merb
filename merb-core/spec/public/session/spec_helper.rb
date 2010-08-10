@@ -1,2 +1,5 @@
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
-require File.expand_path(File.join(File.dirname(__FILE__), "session_shared"))
+#require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+#require File.expand_path(File.join(File.dirname(__FILE__), "session_shared"))
+base_path = File.expand_path(File.dirname(__FILE__))
+require File.join(base_path,"..","..","spec_helper")
+require File.join(base_path,"session_shared")

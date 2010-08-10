@@ -16,3 +16,6 @@ TAGS
 *.tmproj
 .#*
 doc/*
+gems/
+Gemfile.lock
+.bundle
