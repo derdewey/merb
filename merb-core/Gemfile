@@ -11,5 +11,3 @@ gem "memcache-client", :require => 'memcache'
 
 gem "rspec", "~> 1.2.0"
 gem "webrat", "~> 0.3.0"
-
-
