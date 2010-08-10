@@ -1,7 +1,7 @@
-require File.join(File.dirname(__FILE__), "spec_helper")
+require File.join(File.expand_path(File.dirname(__FILE__)), "spec_helper")
 startup_merb(:session_store => "memcache")
 
-require File.join(File.dirname(__FILE__), "controllers", "sessions")
+require File.join(File.expand_path(File.dirname(__FILE__)), "controllers", "sessions")
 
 require 'memcache'
 Merb::MemcacheSession.store = MemCache.new('127.0.0.1:11211', { :namespace => 'my_app' })
