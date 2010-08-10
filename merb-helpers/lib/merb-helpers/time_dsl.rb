@@ -1,11 +1,13 @@
-# Provides a a simple way of calling time units and to see the elapsed time between 2 moments
-# ==== Examples
-#   142.minutes => returns a value in seconds
-#   7.days => returns a value in seconds
-#   1.week => returns a value in seconds
-#   2.weeks.ago => returns a date
-#   1.year.since(time) => returns a date
-#   5.months.since(2.weeks.from_now) => returns a date
+# Provides a a simple way of calling time units and to see the elapsed
+# time between 2 moments.
+#
+# @example
+#   142.minutes                      # => returns a value in seconds
+#   7.days                           # => returns a value in seconds
+#   1.week                           # => returns a value in seconds
+#   2.weeks.ago                      # => returns a date
+#   1.year.since(time)               # => returns a date
+#   5.months.since(2.weeks.from_now) # => returns a date
 module TimeDSL
   
   def second
@@ -42,14 +44,14 @@ module TimeDSL
     self * 31471200
   end
   alias_method :years, :year
-  
-  # Reads best without arguments:  10.minutes.ago
+
+  # @note Reads best without arguments: `10.minutes.ago`
   def ago(time = ::Time.now)
     time - self
   end
   alias :until :ago
-  
-  # Reads best with argument:  10.minutes.since(time)
+
+  # @note Reads best with argument: `10.minutes.since(time)`
   def since(time = ::Time.now)
     time + self
   end

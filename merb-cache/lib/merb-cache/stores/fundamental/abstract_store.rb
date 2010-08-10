@@ -1,8 +1,9 @@
+# @abstract Subclass and override all methods.
 class Merb::Cache::AbstractStore
 
   def initialize(config = {}); end
 
-  # determines if the store is able to persist data identified by the key & parameters
+  # Determines if the store is able to persist data identified by the key & parameters
   # with the given conditions.
   #
   # @param [#to_s] key the key used to identify an entry
@@ -14,8 +15,7 @@ class Merb::Cache::AbstractStore
     raise NotImplementedError
   end
 
-  # gets the data from the store identified by the key & parameters.
-  # return nil if the entry does not exist.
+  # Gets the data from the store identified by the key & parameters.
   #
   # @param [#to_s] key the key used to identify an entry
   # @param [Hash] parameters optional parameters used to identify an entry
@@ -25,9 +25,7 @@ class Merb::Cache::AbstractStore
     raise NotImplementedError
   end
 
-  # persists the data so that it can be retrieved by the key & parameters.
-  # returns nil if it is unable to persist the data.
-  # returns true if successful.
+  # Persists the data so that it can be retrieved by the key & parameters.
   #
   # @param [#to_s] key the key used to identify an entry
   # @param data the object to persist as an entry
@@ -49,7 +47,7 @@ class Merb::Cache::AbstractStore
     write(key, data, parameters, conditions)
   end
 
-  # tries to read the data from the store.  If that fails, it calls
+  # Tries to read the data from the store.  If that fails, it calls
   # the block parameter and persists the result.
   #
   # @param [#to_s] key the key used to identify an entry
@@ -61,22 +59,22 @@ class Merb::Cache::AbstractStore
     raise NotImplementedError
   end
 
-  # returns true/false/nil based on if data identified by the key & parameters
+  # Returns true/false/nil based on if data identified by the key & parameters
   # is persisted in the store.
   #
   # @param [#to_s] key the key used to identify an entry
   # @param [Hash] parameters optional parameters used to identify an entry
-  # @return [TrueClass] true if the key and parameters match an entry in the store, false otherwise
+  # @return [Boolean] true if the key and parameters match an entry in the store, false otherwise
   # @raise [NotImplementedError] API method has not been implemented
   def exists?(key, parameters = {})
     raise NotImplementedError
   end
 
-  # deletes the entry for the key & parameter from the store.
+  # Deletes the entry for the key & parameter from the store.
   #
   # @param [#to_s] key the key used to identify an entry
   # @param [Hash] parameters optional parameters used to identify an entry
-  # @raise [TrueClass] true if the an entry matching the key and parameters is successfully deleted, false otherwise
+  # @raise [Boolean] true if the an entry matching the key and parameters is successfully deleted, false otherwise
   # @raise [NotImplementedError] API method has not been implemented
   def delete(key, parameters = {})
     raise NotImplementedError
@@ -84,16 +82,17 @@ class Merb::Cache::AbstractStore
 
   # deletes all entries for the key & parameters for the store.
   #
-  # @return [TrueClass] true if all entries in the store are erased, false otherwise
+  # @return [Boolean] true if all entries in the store are erased, false otherwise
   # @raise [NotImplementedError] API method has not been implemented
   def delete_all
     raise NotImplementedError
   end
 
-  # dangerous version of delete_all.  Used by strategy stores, which may delete entries not associated with the strategy
-  # store making the call.
+  # Dangerous version of delete_all. Used by strategy stores, which may
+  # delete entries not associated with the strategy store making the call.
   #
-  # @return [TrueClass] true if all entries in the store are erased, false otherwise
+  # @return [Boolean] true if all entries in the store are erased, false
+  #   otherwise
   # @raise [NotImplementedError] API method has not been implemented
   def delete_all!
     delete_all

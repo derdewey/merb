@@ -1,14 +1,11 @@
 require 'digest/sha1'
 
 module Merb::Cache
-  # Strategy store that uses SHA1 hex of
-  # base cache key and parameters as
+  # Strategy store that uses SHA1 hex of base cache key and parameters as
   # cache key.
   #
-  # It is good for caching of expensive
-  # search queries that use multiple
-  # parameters passed via query string
-  # of request.
+  # It is good for caching of expensive search queries that use multiple
+  # parameters passed via query string of request.
   class SHA1Store < AbstractStrategyStore
     def initialize(config = {})
       super(config)

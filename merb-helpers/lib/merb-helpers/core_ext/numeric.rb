@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+
+
 class Numeric
   module Transformer
-    
-    # known formats to use with the app
-    # users can add their own formats by using Numeric::Transformer.add_format(:format_name => {})
-    
+
+    # Known formats to use with the app.
+    # Users can add their own formats by using
+    # `Numeric::Transformer.add_format(:format_name => {})`
     @formats ={
       :us => {
         :number => {      
@@ -67,80 +69,62 @@ class Numeric
              }
            }
     }
-    
-    # accessor for @formats
-    #---
-    # @private
+
+    # Accessor for @formats
+    #
+    # @api private
     def self.formats
       @formats
     end
     
     @default_format = @formats[:us]
     
-    
+
     # Accessor for the default format in use
     #
-    #---
-    # @public
+    #
+    # @api public
     def self.default_format
       @default_format
     end
-    
-    
-    # Changes the default format to use when transforming a +Numeric+ instance
+
+    # Changes the default format to use when transforming a {Numeric} instance.
     #
-    # ==== Parameters
-    # format_code <Symbol>:: format name to use as the new default format
+    # @param [Symbol] format_code Format name to use as the new default format.
     #
-    # ==== Returns
-    # Hash:: a hash representing the default format
+    # @return [Hash] a hash representing the default format
     #
-    #---
-    # @public
+    # @api public
     def self.change_default_format(format_code)
       @default_format = (formats[format_code] || default_format)
     end
-    
-    
-    # Adds a new format to the existing transforming formats
+
+    # Adds a new format to the existing transforming formats.
     #
-    # ==== Parameters
-    # format <Hash>:: format defining how to transform numeric values
+    # @param [Hash] format Format defining how to transform numeric values.
     #
-    # ==== Examples
-    #
-    #
-    #---
-    # @public
+    # @api public
     def self.add_format(format)
       formats.merge!(format)
       formats[format]
     end
 
-    
-    # Formats a +number+ with grouped thousands using +delimiter+ (e.g., 12,324). You can
-    # pass another format to format the number differently.
+    # Formats a number with grouped thousands using a delimiter.
     #
+    # @see Numeric#with_delimiter
+    # @param [Numeric] number
+    # @param (see Numeric#with_delimiter)
+    # @option options (see Numeric#with_delimiter)
     #
-    # ==== Parameters
-    # format_name<Symbol>:: name of the format to use
-    # options<Hash>:: options which will overwrite the used format
+    # @return [String] A string representing the delimited number
     #
-    # ==== Returns
-    # String:: a string representing the delimited number
+    # @example
+    #     with_delimiter(12345678)      # => 12,345,678
+    #     with_delimiter(12345678.05)   # => 12,345,678.05
+    #     with_delimiter(12345678, :FR) # => 12.345.678
+    #     with_delimiter(12345678, :US) # => 12,345,678
     #
-    # ==== Options
-    # :delimiter - Overwrites the thousands delimiter.
-    # :separator - Overwrites the separator between the units.
-    #
-    # ==== Examples
-    # with_delimiter(12345678) # => 12,345,678
-    # with_delimiter(12345678.05) # => 12,345,678.05
-    # with_delimiter(12345678, :FR) # => 12.345.678
-    # with_delimiter(12345678, :US) # => 12,345,678
-    #
-    #---
-    # @private
+    # @api private
     def self.with_delimiter(number, format_name = nil, options = {})
       
       format = (formats[format_name] || default_format)[:number].merge(options)
@@ -153,30 +137,24 @@ class Numeric
         number
       end
     end
-    
-    # Formats a +number+ with a level of <tt>:precision</tt> (e.g., 112.32 has a precision of 2).
-    # You can pass another format to use and even overwrite the format's options.
+
+    # Formats a number with a level of precision.
     #
+    # @see Numeric#with_precision
+    # @param [Numeric] number
+    # @param (see Numeric#with_precision)
+    # @option options (see Numeric#with_precision)
     #
-    # ==== Parameters
-    # format_name<Symbol>:: name of the format to use
-    # options<Hash>:: options which will overwrite the used format
+    # @return [String] A string representing the delimited number.
     #
-    # ==== Returns
-    # String:: a string representing the delimited number
+    # @example
+    #     with_precision(111.2345)                         # => 111.235
+    #     with_precision(111.2345, :UK, :precision => 1)   # => "111.2"
+    #     with_precision(1234.567, :US, :precision => 1,
+    #                                   :separator => ',',
+    #                                   :delimiter => '-') # => "1-234,6"
     #
-    # ==== Options
-    # :precision - Overwrites the level of precision
-    # :separator - Overwrites the separator between the units
-    # :delimiter - Overwrites the thousands delimiter
-    #
-    # ==== Examples
-    # with_precision(111.2345)                       # => 111.235
-    # with_precision(111.2345, :UK, :precision => 1) # => "111.2"
-    # with_precision(1234.567, :US, :precision => 1, :separator => ',', :delimiter => '-') # => "1-234,6"
-    #
-    #---
-    # @private
+    # @api private
     def self.with_precision(number, format_name = nil, options={})
 
       format = (formats[format_name] || default_format)[:number].merge(options)
@@ -188,36 +166,27 @@ class Numeric
         number
       end
     end
-    
-    
-    # Formats a +number+ into a currency string (e.g., $13.65). You can specify a format to use 
-    # and even overwrite some of the format options.
+
+    # Formats a number into a currency string.
     #
-    # ==== Parameters
-    # number<Numeric>:: Numeric value to convert
-    # format_name<Symbol>:: name of the format to use
-    # options<Hash>:: options which will overwrite the used format
+    # @see Numeric#to_currency
+    # @param [Numeric] number
+    # @param (see Numeric#to_currency)
+    # @option options (see Numeric#to_currency)
     #
-    # ==== Returns
-    # String:: a string representing the number converted in currency
+    # @return [String] A string representing the number converted in
+    #   currency
     #
-    # ==== Options
-    # :precision - Sets the level of precision 
-    # :unit - Sets the denomination of the currency 
-    # :format - Sets the format of the output string (defaults to "%u%n"). The field types are:
+    # @example
+    #     to_currency(1234567890.506, :US, :precision => 1)  # => "$1,234,567,890.5"
+    #     to_currency(1234567890.516, :FR)                   # =>"1 234 567 890,52€"
+    #     to_currency(1234567890.516, :US, :unit => "€")     # =>"€1,234,567,890.52"
+    #     to_currency(1234567890.506, :US, :precision => 3, :unit => "€")
+    #     # => "€1,234,567,890.506"
+    #     to_currency(1234567890.506, :AU, :unit => "$AUD", :format => '%n %u')
+    #     # => "1,234,567,890.51 $AUD"
     #
-    # %u The currency unit
-    # %n The number
-    #
-    # ==== Examples
-    # to_currency(1234567890.506, :US, :precision => 1)  # => "$1,234,567,890.5"
-    # to_currency(1234567890.516, :FR)                   # =>"1 234 567 890,52€"
-    # to_currency(1234567890.516, :US, :unit => "€")     # =>"€1,234,567,890.52"
-    # to_currency(1234567890.506, :US, :precision => 3, :unit => "€") # => "€1,234,567,890.506"
-    # to_currency(1234567890.506, :AU, :unit => "$AUD", :format => '%n %u') # => "1,234,567,890.51 $AUD"
-    #
-    #---
-    # @private
+    # @api private
     def self.to_currency(number, format_name = nil, options = {})
       
       format = (formats[format_name] || default_format)[:currency].merge(options)
@@ -229,38 +198,37 @@ class Numeric
         number
       end
     end
-    
-    
-    # Formats a +number+ into a two digit string. Basically it prepends an integer to a 2 digits string.
+
+    # Formats a number into a two digit string.
     #
-    # ==== Parameters
-    # number<Numeric>:: Numeric value to convert
+    # @see Numeric#two_digits
+    # @param [Numeric] number
     #
-    # ==== Returns
-    # String:: a string representing the number converted into a 2 digits string.
+    # @return [String] A string representing the number converted into
+    #   a 2 digits string.
     #
-    # ==== Examples
-    # two_digits(5-3) # => "02"
+    # @example
+    #     two_digits(5-3) # => "02"
     #
-    #---
-    # @private
+    # @api private
     def self.two_digits(number)
       (0..9).include?(number) ? "0#{number}" : number.to_s
     end
 
-    # Converts a +numeric+ value representing minutes into a string representing an hour value
+    # Converts a numeric value representing minutes into a string
+    # representing an hour value.
     #
-    # ==== Parameters
-    # number<Numeric>:: Numeric value representing minutes to convert in hours
+    # @see Numeric#minutes_to_hours
+    # @param [Numeric] number Numeric value representing minutes to
+    #   convert in hours.
     #
-    # ==== Returns
-    # String:: a string representing the numeric value converted in hours
+    # @return [String] A string representing the numeric value converted
+    #   in hours.
     #
-    # ==== Examples
-    # minutes_to_hours(315) => "05:15"
+    # @example
+    #     minutes_to_hours(315) => "05:15"
     #
-    #---
-    # @private
+    # @api private
     def self.minutes_to_hours(minutes)
       hours = (minutes/60).ceil
       minutes = (minutes - (hours * 60)).to_i
@@ -268,122 +236,112 @@ class Numeric
     end
 
   end #of Numeric::Transformer
- 
-  # Formats with with grouped thousands using +delimiter+ (e.g., 12,324). You can
-  # pass another format to format the number differently.
+
+  # Formats a number with grouped thousands using a delimiter, e.g., 12,324.
+  # You can pass another format to format the number differently.
   #
+  # @param [Symbol] format_name Name of the format to use.
+  # @param [Hash] options Options which will overwrite the used format
+  # @option options [String] :delimiter
+  #   Overwrites the thousands delimiter.
+  # @option options [String] :separator
+  #   Overwrites the separator between the units.
   #
-  # ==== Parameters
-  # format_name<Symbol>:: name of the format to use
-  # options<Hash>:: options which will overwrite the used format
+  # @return [String] A string representing the delimited number
   #
-  # ==== Returns
-  # String:: a string representing the delimited number
+  # @example
+  #     12345678.with_delimiter      # => 12,345,678
+  #     12345678.05.with_delimiter   # => 12,345,678.05
+  #     12345678.with_delimiter(:FR) # => 12.345.678
+  #     12345678.with_delimiter(:US) # => 12,345,678
   #
-  # ==== Options
-  # :delimiter - Overwrites the thousands delimiter.
-  # :separator - Overwrites the separator between the units.
-  #
-  # ==== Examples
-  # 12345678.with_delimiter      # => 12,345,678
-  # 12345678.05.with_delimiter   # => 12,345,678.05
-  # 12345678.with_delimiter(:FR) # => 12.345.678
-  # 12345678.with_delimiter(:US) # => 12,345,678
-  #
-  #---
-  # @public
+  # @api public
   def with_delimiter(format_name = nil, options = {})
     Transformer.with_delimiter(self, format_name, options)
   end
-  
-  # Formats with a level of <tt>:precision</tt> (e.g., 112.32 has a precision of 2).
-  # You can pass another format to use and even overwrite the format's options.
+
+  # Formats a number with a level of precision, e.g., 112.32 has a
+  # precision of 2. You can pass another format to use and even overwrite
+  # the format's options.
   #
+  # @param (see #with_delimiter)
+  # @option options (see #with_delimiter)
+  # @option options [Fixnum] :precision
+  #   Overwrites the level of precision
   #
-  # ==== Parameters
-  # format_name<Symbol>:: name of the format to use
-  # options<Hash>:: options which will overwrite the used format
+  # @return [String] A string representing the delimited number.
   #
-  # ==== Returns
-  # String:: a string representing the delimited number
+  # @example
+  #     111.2345.with_precision                         # => 111.235
+  #     111.2345.with_precision(:UK, :precision => 1)   # => "111.2"
+  #     1234.567.with_precision(:US, :precision => 1,
+  #                                  :separator => ',',
+  #                                  :delimiter => '-') # => "1-234,6"
   #
-  # ==== Options
-  # :precision - Overwrites the level of precision
-  # :separator - Overwrites the separator between the units
-  # :delimiter - Overwrites the thousands delimiter
-  #
-  # ==== Examples
-  # 111.2345.with_precision                       # => 111.235
-  # 111.2345.with_precision(:UK, :precision => 1) # => "111.2"
-  # 1234.567.with_precision(:US, :precision => 1, :separator => ',', :delimiter => '-') # => "1-234,6"
-  #
-  #---
-  # @public
+  # @api public
   def with_precision(format_name = nil, options = {})
     Transformer.with_precision(self, format_name, options)
   end
-  
-  # Formats into a currency string (e.g., $13.65). You can specify a format to use 
-  # and even overwrite some of the format options.
+
+  # Formats a number into a currency string, e.g., $13.65. You can
+  # specify a format to use and even overwrite some of the format
+  # options.
   #
-  # ==== Parameters
-  # format_name<Symbol>:: name of the format to use
-  # options<Hash>:: options which will overwrite the used format
+  # @param (see #with_delimiter)
+  # @option options [Fixnum] :precision
+  #   Sets the level of precision.
+  # @option options [String] :unit
+  #   Sets the denomination of the currency.
+  # @option options [String] :format ("%u%n")
+  #   Sets the format of the output string. The field types are:
   #
-  # ==== Returns
-  # String:: a string representing the number converted in currency
+  #   * `%u`: The currency unit
+  #   * `%n`: The number
   #
-  # ==== Options
-  # :precision - Sets the level of precision 
-  # :unit - Sets the denomination of the currency 
-  # :format - Sets the format of the output string (defaults to "%u%n"). The field types are:
+  # @return [String] A string representing the number converted in
+  #   currency
   #
-  # %u The currency unit
-  # %n The number
+  # @example
+  #     1234567890.506.to_currency(:US)                   # => "$1,234,567,890.51"
+  #     1234567890.506.to_currency(:US, :precision => 1)  # => "$1,234,567,890.5"
+  #     1234567890.516.to_currency(:FR)                   # =>"1 234 567 890,52€"
+  #     1234567890.516.to_currency(:US, :unit => "€")     # =>"€1,234,567,890.52"
+  #     1234567890.506.to_currency(:US, :precision => 3, :unit => "€")
+  #     # => "€1,234,567,890.506"
+  #     1234567890.506.to_currency(:AU, :unit => "$AUD", :format => '%n %u')
+  #     # => "1,234,567,890.51 $AUD"
   #
-  # ==== Examples
-  # 1234567890.506.to_currency(:US)                   # => "$1,234,567,890.51"
-  # 1234567890.506.to_currency(:US, :precision => 1)  # => "$1,234,567,890.5"
-  # 1234567890.516.to_currency(:FR)                   # =>"1 234 567 890,52€"
-  # 1234567890.516.to_currency(:US, :unit => "€")     # =>"€1,234,567,890.52"
-  # 1234567890.506.to_currency(:US, :precision => 3, :unit => "€") # => "€1,234,567,890.506"
-  # 1234567890.506.to_currency(:AU, :unit => "$AUD", :format => '%n %u') # => "1,234,567,890.51 $AUD"
-  #---
-  # @public
+  # @api public
   def to_currency(format_name = nil, options = {})
     Transformer.to_currency(self, format_name, options)
   end
 
-  # Formats a +number+ into a two digit string. Basically it prepends an integer to a 2 digits string.
+  # Formats a number into a two digit string. Basically it prepends an
+  # integer to a 2 digits string.
   #
-  # ==== Returns
-  # String:: a string representing the number converted into a 2 digits string.
+  # @return [String] a string representing the number converted into a
+  #   2 digits string.
   #
-  # ==== Examples
-  # (5-3).two_digits # => "02"
+  # @example
+  #     (5-3).two_digits # => "02"
   #
-  #---
-  # @public
+  # @api public
   def two_digits
     Transformer.two_digits(self)
   end
 
-  # Converts a +numeric+ value representing minutes into a string representing an hour value
+  # Converts a numeric value representing minutes into a string representing
+  # an hour value.
   #
-  # ==== Parameters
-  # number<Numeric>:: Numeric value representing minutes to convert in hours
+  # @return [String] A string representing the numeric value converted
+  #   in hours.
   #
-  # ==== Returns
-  # String:: a string representing the numeric value converted in hours
+  # @example
+  #     315.minutes_to_hours => "05:15"
   #
-  # ==== Examples
-  # 315.minutes_to_hours => "05:15"
-  #
-  #---
-  # @public
+  # @api public
   def minutes_to_hours
     Transformer.minutes_to_hours(self)
   end
-  
-  
+
 end

@@ -8,18 +8,17 @@ module Merb
 
       # Start a Merb server, in either foreground, daemonized or cluster mode.
       #
-      # ==== Parameters
-      # port<~to_i>::
+      # #### Alternatives
+      # If cluster is left out, then one process will be started. This process
+      # will be daemonized if `Merb::Config[:daemonize]` is true.
+      #
+      # @param [#to_i] port
       #   The port to which the first server instance should bind to.
       #   Subsequent server instances bind to the immediately following ports.
-      # cluster<~to_i>::
+      # @param [#to_i] cluster
       #   Number of servers to run in a cluster.
       #
-      # ==== Alternatives
-      # If cluster is left out, then one process will be started. This process
-      # will be daemonized if Merb::Config[:daemonize] is true.
-      #
-      # :api: private
+      # @api private
       def start(port, cluster=nil)
 
         @port = port
@@ -43,14 +42,12 @@ module Merb
         end
       end
 
-      # ==== Parameters
-      # port<~to_s>:: The port to check for Merb instances on.
+      # @param [#to_s] port The port to check for Merb instances on.
       #
-      # ==== Returns
-      # Boolean::
+      # @return [Boolean]
       #   True if Merb is running on the specified port.
       #
-      # :api: private
+      # @api private
       def alive?(port)
         pidfile = pid_file(port)
         pid     = pid_in_file(pidfile)
@@ -62,34 +59,34 @@ module Merb
         Merb.fatal!("You don't have access to the PID file at #{pidfile}: #{e.message}")
       end
 
-      # :api: private
+      # @api private
       def pid_in_file(pidfile)
         File.read(pidfile).chomp.to_i
       end
 
-      # ==== Parameters
-      # port<~to_s>:: The port of the Merb process to kill.
-      # sig<~to_s>:: The signal to send to the process, the default is 9 - SIGKILL.
+      # Send a signal to a Merb process.
       #
-      # No    Name         Default Action       Description
-      # 1     SIGHUP       terminate process    terminal line hangup
-      # 2     SIGINT       terminate process    interrupt program
-      # 3     SIGQUIT      create core image    quit program
-      # 4     SIGILL       create core image    illegal instruction
-      # 9     SIGKILL      terminate process    kill program
-      # 15    SIGTERM      terminate process    software termination signal
-      # 30    SIGUSR1      terminate process    User defined signal 1
-      # 31    SIGUSR2      terminate process    User defined signal 2
+      #     No    Name         Default Action       Description
+      #     1     SIGHUP       terminate process    terminal line hangup
+      #     2     SIGINT       terminate process    interrupt program
+      #     3     SIGQUIT      create core image    quit program
+      #     4     SIGILL       create core image    illegal instruction
+      #     9     SIGKILL      terminate process    kill program
+      #     15    SIGTERM      terminate process    software termination signal
+      #     30    SIGUSR1      terminate process    User defined signal 1
+      #     31    SIGUSR2      terminate process    User defined signal 2
       #
-      # ==== Alternatives
-      # If you pass "all" as the port, the signal will be sent to all Merb processes.
+      # @param [#to_s] port The port of the Merb process to kill. If you
+      #   pass "main", "master", or "all" as the port and `SIGINT` as the
+      #   signal, the signal will be sent to all Merb processes.
+      # @param [#to_s] sig The signal to send to the process.
       #
-      # :api: private
+      # @api private
       def kill(port, sig = "INT")
         if sig.is_a?(Integer)
           sig = Signal.list.invert[sig]
         end
-        
+
         Merb::BootLoader::BuildFramework.run
 
         # If we kill the master, then the workers should be reaped also.
@@ -104,7 +101,7 @@ module Merb
       end
 
       # Sends the provided signal to the process pointed at by the provided pid file.
-      # :api: private
+      # @api private
       def kill_pid(sig, file)
         begin
           pid = pid_in_file(file)
@@ -123,7 +120,7 @@ module Merb
         rescue Errno::EACCES => e
           Merb.logger.fatal! e.message
         rescue Errno::ENOENT => e
-          # This should not cause abnormal exit, which is why 
+          # This should not cause abnormal exit, which is why
           # we do not use Merb.fatal but instead just log with max level.
           Merb.logger.fatal! "Could not find a PID file at #{file}. " \
             "Most likely the process is no longer running and the pid file was not cleaned up."
@@ -134,10 +131,9 @@ module Merb
         end
       end
 
-      # ==== Parameters
-      # port<~to_s>:: The port of the Merb process to daemonize.
+      # @param [#to_s] port The port of the Merb process to daemonize.
       #
-      # :api: private
+      # @api private
       def daemonize(port)
         Merb.logger.warn! "About to fork..." if Merb::Config[:verbose]
         fork do
@@ -164,7 +160,7 @@ module Merb
 
       # Starts up Merb by running the bootloader and starting the adapter.
       #
-      # :api: private
+      # @api private
       def bootup
         Merb.trap("TERM") { shutdown }
 
@@ -176,7 +172,7 @@ module Merb
 
       # Shut down Merb, reap any workers if necessary.
       #
-      # :api: private
+      # @api private
       def shutdown(status = 0)
         # reap_workers does exit but may not be called...
         Merb::BootLoader::LoadClasses.reap_workers(status) if Merb::Config[:fork_for_class_load]
@@ -186,7 +182,7 @@ module Merb
 
       # Change process user/group to those specified in Merb::Config.
       #
-      # :api: private
+      # @api private
       def change_privilege
         if Merb::Config[:user] && Merb::Config[:group]
           Merb.logger.verbose! "About to change privilege to group " \
@@ -202,18 +198,17 @@ module Merb
       end
 
       # Removes a PID file used by the server from the filesystem.
-      # This uses :pid_file options from configuration when provided
+      # This uses `:pid_file` options from configuration when provided
       # or merb.<port/socket>.pid in log directory by default.
       #
-      # ==== Parameters
-      # port<~to_s>::
-      #   The port of the Merb process to whom the the PID file belongs to.
-      #
-      # ==== Alternatives
-      # If Merb::Config[:pid_file] has been specified, that will be used
+      # #### Alternatives
+      # If `Merb::Config[:pid_file]` has been specified, that will be used
       # instead of the port/socket based PID file.
       #
-      # :api: private
+      # @param [#to_s] port
+      #   The port of the Merb process to whom the the PID file belongs to.
+      #
+      # @api private
       def remove_pid_file(port)
         pidfile = pid_file(port)
         if File.exist?(pidfile)
@@ -222,43 +217,33 @@ module Merb
         end
       end
 
-      # Stores a PID file on the filesystem.
-      # This uses :pid_file options from configuration when provided
-      # or merb.<port>.pid in log directory by default.
+      # @param [#to_s] port The port of the Merb process to whom the the PID file
+      #                     belongs to.
       #
-      # ==== Parameters
-      # port<~to_s>::
-      #   The port of the Merb process to whom the the PID file belongs to.
-      #
-      # ==== Alternatives
-      # If Merb::Config[:pid_file] has been specified, that will be used
-      # instead of the port/socket based PID file.
-      #
-      # :api: private
+      # @api private
       def store_pid(port)
         store_details(port)
       end
 
       # Delete the pidfile for the specified port/socket.
       #
-      # :api: private
+      # @api private
       def remove_pid(port)
         FileUtils.rm(pid_file(port)) if File.file?(pid_file(port))
       end
 
       # Stores a PID file on the filesystem.
-      # This uses :pid_file options from configuration when provided
+      # This uses `:pid_file` options from configuration when provided
       # or merb.<port/socket>.pid in log directory by default.
       #
-      # ==== Parameters
-      # port<~to_s>::
-      #   The port of the Merb process to whom the the PID file belongs to.
-      #
-      # ==== Alternatives
-      # If Merb::Config[:pid_file] has been specified, that will be used
+      # #### Alternatives
+      # If `Merb::Config[:pid_file]` has been specified, that will be used
       # instead of the port/socket based PID file.
       #
-      # :api: private
+      # @param [#to_s] port
+      #   The port of the Merb process to whom the the PID file belongs to.
+      #
+      # @api private
       def store_details(port = nil)
         file = pid_file(port)
         begin
@@ -277,16 +262,14 @@ module Merb
 
       # Gets the pid file for the specified port/socket.
       #
-      # ==== Parameters
-      # port<~to_s>::
+      # @param [#to_s] port
       #   The port/socket of the Merb process to whom the the PID file belongs to.
       #
-      # ==== Returns
-      # String::
+      # @return [String]
       #   Location of pid file for specified port. If clustered and pid_file option
       #   is specified, it adds the port/socket value to the path.
       #
-      # :api: private
+      # @api private
       def pid_file(port)
         pidfile = Merb::Config[:pid_file] || (Merb.log_path / "merb.%s.pid")
         pidfile % port
@@ -294,11 +277,10 @@ module Merb
 
       # Get a list of the pid files.
       #
-      # ==== Returns
-      # Array::
+      # @return [Array]
       #   List of pid file paths. If not running clustered, the array contains a single path.
       #
-      # :api: private
+      # @api private
       def pid_files
         if Merb::Config[:pid_file]
           if Merb::Config[:cluster]
@@ -313,14 +295,13 @@ module Merb
 
       # Change privileges of the process to the specified user and group.
       #
-      # ==== Parameters
-      # user<String>:: The user to change the process to.
-      # group<String>:: The group to change the process to.
-      #
-      # ==== Alternatives
+      # #### Alternatives
       # If group is left out, the user will be used as the group.
-      # 
-      # :api: private
+      #
+      # @param [String] user  The user to change the process to.
+      # @param [String] group The group to change the process to.
+      #
+      # @api private
       def _change_privilege(user, group=user)
         Merb.logger.warn! "Changing privileges to #{user}:#{group}"
 
@@ -351,10 +332,10 @@ module Merb
         Merb.fatal! "Permission denied for changing user:group to #{user}:#{group}.", e
         false
       end
-      
+
       # Add trap to enter IRB on SIGINT. Process exit if second SIGINT is received.
       #
-      # :api: private
+      # @api private
       def add_irb_trap
         Merb.trap("INT") do
           if @interrupted

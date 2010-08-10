@@ -11,35 +11,35 @@ end
 
 module Merb
 
-  # You'll need a simple config like this in init.rb if you want
+  # You'll need a simple config like this in `init.rb` if you want
   # to actually send mail:
   #
-  #   Merb::Mailer.config = {
-  #     :host   => 'smtp.yourserver.com',
-  #     :port   => '25',
-  #     :user   => 'user',
-  #     :pass   => 'pass',
-  #     :auth   => :plain # :plain, :login, :cram_md5, the default is no auth
-  #     :domain => "localhost.localdomain" # the HELO domain provided by the client to the server
-  #     :tls    => true/false/nil, true enables tls, default nil 
-  #   }
+  #     Merb::Mailer.config = {
+  #       :host   => 'smtp.yourserver.com',
+  #       :port   => '25',
+  #       :user   => 'user',
+  #       :pass   => 'pass',
+  #       :auth   => :plain # :plain, :login, :cram_md5, the default is no auth
+  #       :domain => "localhost.localdomain" # the HELO domain provided by the client to the server
+  #       :tls    => true/false/nil, true enables tls, default nil 
+  #     }
   #
-  #   or
+  # or
   #
-  #   Merb::Mailer.config = {:sendmail_path => '/somewhere/odd'}
-  #   Merb::Mailer.delivery_method = :sendmail
+  #     Merb::Mailer.config = {:sendmail_path => '/somewhere/odd'}
+  #     Merb::Mailer.delivery_method = :sendmail
   #
   # You could send mail manually like this (but it's better to use
   # a MailController instead).
   #
-  #   m = Merb::Mailer.new :to => 'foo@bar.com',
-  #                        :from => 'bar@foo.com',
-  #                        :subject => 'Welcome to whatever!',
-  #                        :html => partial(:sometemplate)
-  #   m.deliver!
+  #     m = Merb::Mailer.new :to => 'foo@bar.com',
+  #                          :from => 'bar@foo.com',
+  #                          :subject => 'Welcome to whatever!',
+  #                          :html => partial(:sometemplate)
+  #     m.deliver!
   #
-  # You can use :text option to specify plain text email body
-  # and :html for HTML email body.
+  # You can use `:text` option to specify plain text email body and `:html`
+  # for HTML email body.
   class Mailer
 
     class_inheritable_accessor :config, :delivery_method, :deliveries
@@ -83,17 +83,10 @@ module Merb
       send(delivery_method || :net_smtp)
     end
 
-    # ==== Parameters
-    # file_or_files<File, Array[File]>:: File(s) to attach.
-    # filename<String>::
-    # type<~to_s>::
-    #   The attachment MIME type. If left out, it will be determined from
-    #   file_or_files.
-    # headers<String, Array>:: Additional attachment headers.
+    # @param (see MailController#attach)
     #
-    # ==== Raises
-    # ArgumentError::
-    #   file_or_files was not a File or an Array of File instances.
+    # @raise [ArgumentError] `file_or_files` was not a File or an Array of
+    #   File instances.
     def attach(file_or_files, filename = file_or_files.is_a?(File) ? File.basename(file_or_files.path) : nil,
       type = nil, headers = nil)
       if file_or_files.is_a?(Array)
@@ -111,8 +104,8 @@ module Merb
       end
     end
 
-    # ==== Parameters
-    # o<Hash{~to_s => Object}>:: Configuration commands to send to MailFactory.
+    # @param [Hash<#to_s => Object>] o Configuration commands to send to
+    #   MailFactory.
     def initialize(o={})
       self.config = { :sendmail_path => '/usr/sbin/sendmail' } if config.nil?
       o[:rawhtml] = o.delete(:html)

@@ -1,27 +1,28 @@
 module Merb
   module Slices
     
+    # This module should be explicitly included into a controller,
+    # for example in Application (the main controller of your app).
+    # It contains optional methods for slice/plugin developers.
     module Support
-      
-      # This module should be explicitly included into a controller,
-      # for example in Application (the main controller of your app).
-      # It contains optional methods for slice/plugin developers.
-      
-      # Generate a slice url - takes the slice's :path_prefix into account.
+
+      # Generate a slice URL. Takes the slice's `:path_prefix` into account.
       #
-      # @param slice_name<Symbol> 
-      #   The name of the slice - in identifier_sym format (underscored).
-      # @param *args<Array[Symbol,Hash]> 
+      # @param [Symbol] slice_name
+      #   The name of the slice in `identifier_sym` format (underscored).
+      # @param [Array<Symbol,Hash>] *args
       #   There are several possibilities regarding arguments:
-      #   - when passing a Hash only, the :default route of the current 
-      #     slice will be used
-      #   - when a Symbol is passed, it's used as the route name
-      #   - a Hash with additional params can optionally be passed
-      # 
-      # @return <String> A uri based on the requested slice.
       #
-      # @example slice_url(:awesome, :format => 'html')
-      # @example slice_url(:forum, :posts, :format => 'xml')          
+      #   * when passing a Hash only, the :default route of the current
+      #     slice will be used
+      #   * when a Symbol is passed, it's used as the route name
+      #   * a Hash with additional params can optionally be passed
+      # 
+      # @return [String>] URI based on the requested slice.
+      #
+      # @example
+      #   slice_url(:awesome, :format => 'html')
+      #   slice_url(:forum, :posts, :format => 'xml')
       def slice_url(slice_name, *args)
         opts = args.last.is_a?(Hash) ? args.pop : {}
         route_name = args[0].is_a?(Symbol) ? args.shift : :default
@@ -44,22 +45,26 @@ module Merb
       end
       
       module ClassMethods
-        
-        # Setup a controller to reference a slice and its template roots
+
+        # Setup a controller to reference a slice and its template roots.
         #
-        # This method is available to any class inheriting from Merb::AbstractController;
-        # it enabled correct location of templates, as well as access to the slice module.
+        # This method is available to any class inheriting from {Merb::AbstractController};
+        # it enables correct location of templates, as well as access to the slice module.
         #
-        # @param slice_module<#to_s> The slice module to use; defaults to current module.
-        # @param options<Hash> 
-        #   Optional parameters to set which component path is used (defaults to :view) and
-        #   the :path option lets you specify a subdirectory of that component path.
-        #   When :layout is set, then this is used instead of the config's :layout setting.
+        # @param [#to_s] slice_module The slice module to use; defaults to current module.
+        # @param [Hash] options Optional parameters.
+        # @option options [String, Symbol] :path (:view)
+        #   Specify a subdirectory of the component path.
+        # @option options :layout
+        #   Override the config's `:layout` setting.
         #
-        # @example controller_for_slice # uses current module
-        # @example controller_for_slice SliceMod # defaults to :view templates and no subdirectory
-        # @example controller_for_slice :templates_for => :mailer, :path => 'views' # for Merb::Mailer
-        # @example controller_for_slice SliceMod, :templates_for => :mailer, :path => 'views' # for Merb::Mailer
+        # @example
+        #   controller_for_slice             # uses current module
+        #   controller_for_slice SliceMod    # defaults to :view templates and no subdirectory
+        #
+        #   # for Merb::Mailer:
+        #   controller_for_slice :templates_for => :mailer, :path => 'views'
+        #   controller_for_slice SliceMod, :templates_for => :mailer, :path => 'views'
         def controller_for_slice(slice_module = nil, options = {})
           options, slice_module = slice_module.merge(options), nil if slice_module.is_a?(Hash)
           slice_module ||= self.name.split('::').first
@@ -104,40 +109,42 @@ module Merb
           klass.send(:include, InstanceMethods)
           klass.hide_action :slice if klass.respond_to?(:hide_action)
         end
-        
-        # Use the slice's layout - defaults to underscored identifier.
+
+        # Use the slice's layout. Defaults to underscored identifier.
         #
         # This is set for generated stubs that support layouts.
         #
-        # @param layout<#to_s> The layout name to use.
+        # @param [#to_s] layout The layout name to use.
         def layout_for_slice(layout = nil)
           layout(layout || self.slice.config[:layout]) if layout || self.slice.config.key?(:layout)
         end
         
         module InstanceMethods
-      
+
           # Reference this controller's slice module directly.
           #
-          # @return <Module> A slice module.
+          # @return [Module] A slice module.
           def slice; self.class.slice; end
-          
-          # Generate a url - takes the slice's :path_prefix into account.
+
+          # Generate a URL. Takes the slice's `:path_prefix` into account.
           #
-          # @param *args<Array[Symbol,Hash]> 
+          # @param [Array<Symbol,Hash]>] *args
           #   There are several possibilities regarding arguments:
-          #   - when passing a Hash only, the :default route of the current 
-          #     slice will be used
-          #   - when a single Symbol is passed, it's used as the route name,
-          #     while the slice itself will be the current one
-          #   - when two Symbols are passed, the first will be the slice name,
-          #     the second will be the route name
-          #   - a Hash with additional params can optionally be passed
-          # 
-          # @return <String> A uri based on the requested slice.
           #
-          # @example slice_url(:controller => 'foo', :action => 'bar')
-          # @example slice_url(:awesome, :format => 'html')
-          # @example slice_url(:forum, :posts, :format => 'xml')          
+          #   * when passing a Hash only, the `:default` route of the current
+          #     slice will be used
+          #   * when a single Symbol is passed, it's used as the route name,
+          #     while the slice itself will be the current one
+          #   * when two Symbols are passed, the first will be the slice name,
+          #     the second will be the route name
+          #   * a Hash with additional params can optionally be passed
+          # 
+          # @return [String] A URI based on the requested slice.
+          #
+          # @example
+          #   slice_url(:controller => 'foo', :action => 'bar')
+          #   slice_url(:awesome, :format => 'html')
+          #   slice_url(:forum, :posts, :format => 'xml')
           def slice_url(*args)
             opts = args.last.is_a?(Hash) ? args.pop : {}
             slice_name, route_name = if args[0].is_a?(Symbol) && args[1].is_a?(Symbol)
@@ -158,17 +165,17 @@ module Merb
           end
 
           private
-  
+
           # This is called after the controller is instantiated to figure out where to
-          # for templates under the _template_root. This helps the controllers
+          # for templates under the `_template_root`. This helps the controllers
           # of a slice to locate templates without looking in a subdirectory with
-          # the name of the module. Instead it will just be app/views/controller/*
+          # the name of the module. Instead it will just be `app/views/controller/*`
           #
-          # @param context<#to_str> The controller context (the action or template name).
-          # @param type<#to_str> The content type. Defaults to nil.
-          # @param controller<#to_str> The name of the controller. Defaults to controller_name.
+          # @param [#to_str] context The controller context (the action or template name).
+          # @param [#to_str] type The content type.
+          # @param [#to_str] controller The name of the controller.
           #
-          # @return <String> 
+          # @return [String]
           #   Indicating where to look for the template for the current controller,
           #   context, and content-type.
           def _slice_template_location(context, type = nil, controller = controller_name)

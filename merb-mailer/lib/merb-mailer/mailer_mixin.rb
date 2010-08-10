@@ -1,20 +1,16 @@
 module Merb
   module MailerMixin
-    
-    # Sends mail via a MailController (a tutorial can be found in the
-    # MailController docs).
+
+    # Sends mail via a {Merb::MailController}.
     #
-    # ==== Parameters
-    # klass<Class>:: The mailer class.
-    # method<~to_s>:: The method to call on the mailer.
-    # mail_params<Hash>::
-    #   Mailing parameters, e.g. :to and :cc. See
-    #   Merb::MailController#dispatch_and_deliver for details.
-    # send_params<Hash>::
-    #   Params to send to the mailer. Defaults to the params of the current
-    #   controller.
+    # @param [Class] klass The mailer class.
+    # @param [#to_s] method The method to call on the mailer.
+    # @param [Hash] mail_params Mailing parameters, e.g. `:to` and `:cc`.
+    #   See {Merb::MailController#dispatch_and_deliver} for details.
+    # @param [Hash] send_params Params to send to the mailer. Defaults
+    #   to the params of the current controller.
     #
-    # ==== Examples
+    # @example
     #   # Send an email via the FooMailer's bar method.
     #   send_mail FooMailer, :bar, :from => "foo@bar.com", :to => "baz@bat.com"
     def send_mail(klass, method, mail_params, send_params = nil)

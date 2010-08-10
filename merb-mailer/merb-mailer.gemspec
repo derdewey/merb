@@ -19,10 +19,9 @@ Gem::Specification.new do |gem|
   gem.description = 'Merb plugin for mailer support'
   gem.summary     = 'Merb plugin that provides mailer functionality to Merb'
 
-  gem.has_rdoc = true 
+  gem.has_rdoc = 'yard'
   gem.require_paths = ['lib']
-  gem.extra_rdoc_files = ['README.textile', 'LICENSE', 'TODO']
-  gem.files = Dir['Generators', 'Rakefile', '{lib,spec}/**/*', 'README*', 'LICENSE*', 'TODO*'] & `git ls-files -z`.split("\0")
+  gem.files = Dir['Generators', 'Rakefile', '{lib,spec,docs}/**/*', 'README*', 'LICENSE*', 'TODO*'] & `git ls-files -z`.split("\0")
 
   # Runtime dependencies
   gem.add_dependency 'merb-core', "~> #{Merb::VERSION}"

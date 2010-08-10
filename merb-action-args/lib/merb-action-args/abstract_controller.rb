@@ -6,9 +6,8 @@ class Merb::AbstractController
 
     # Stores the argument lists for all methods for this class.
     #
-    # ==== Parameters
-    # klass<Class>::
-    #   The controller that is being inherited from Merb::AbstractController.
+    # @param [Class] klass
+    #   The controller that is being inherited from {Merb::AbstractController}.
     def inherited(klass)
       klass.action_argument_list = Hash.new do |h,k|
         args = klass.instance_method(k).get_args
@@ -23,11 +22,9 @@ class Merb::AbstractController
 
   # Calls an action and maps the params hash to the action parameters.
   #
-  # ==== Parameters
-  # action<Symbol>:: The action to call
+  # @param [Symbol] action The action to call.
   #
-  # ==== Raises
-  # BadRequest:: The params hash doesn't have a required parameter.
+  # @raise [BadRequest] The params hash doesn't have a required parameter.
   def _call_action(action)
     arguments, defaults = self.class.action_argument_list[action]
     

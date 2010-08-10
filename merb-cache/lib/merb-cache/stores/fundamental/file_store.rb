@@ -2,14 +2,18 @@ module Merb::Cache
   # Cache store that uses files. Usually this is good for fragment
   # and page caching but not object caching.
   #
-  # By default cached files are stored in tmp/cache under Merb.root directory.
-  # To use other location pass :dir option to constructor.
+  # By default cached files are stored in `tmp/cache` under `Merb.root`
+  # directory. To use other location pass `:dir` option to constructor.
   #
   # File caching does not support expiration time.
   class FileStore < AbstractStore
     attr_accessor :dir
 
     # Creates directory for cached files unless it exists.
+    #
+    # @param [Hash] config Configuration options
+    # @option config [String] :dir (Merb.root_path(:tmp / :cache)
+    #   Storage path.
     def initialize(config = {})
       @dir = config[:dir] || Merb.root_path(:tmp / :cache)
 
@@ -84,8 +88,7 @@ module Merb::Cache
       FileUtils.mkdir_p(File.dirname(path))
     end
 
-    # Reads file content. Access to the file
-    # uses file locking.
+    # Reads file content. Access to the file uses file locking.
     def read_file(path)
       data = nil
       File.open(path, "r") do |file|
@@ -97,8 +100,7 @@ module Merb::Cache
       data
     end
 
-    # Writes file content. Access to the file
-    # uses file locking.    
+    # Writes file content. Access to the file uses file locking.
     def write_file(path, data)
       File.open(path, "w+") do |file|
         file.flock(File::LOCK_EX)

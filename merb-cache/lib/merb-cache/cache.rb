@@ -36,9 +36,10 @@ module Merb
 
     self.stores = {}
 
-    # Cache store lookup
-    # name<Symbol> : The name of a registered store
-    # Returns<Nil AbstractStore> : A thread-safe copy of the store
+    # Cache store lookup.
+    #
+    # @param [Symbol] *names The name of a registered store.
+    # @return [AbstractStore, nil] A thread-safe copy of the store.
     def self.[](*names)
       if names.size == 1
         Thread.current[:'merb-cache'] ||= {}
@@ -50,15 +51,18 @@ module Merb
       raise(StoreNotFound, "Could not find the :#{names.first} store")
     end
 
-    # Clones the cache stores for the current thread
+    # Clones the cache stores for the current thread.
     def self.clone_stores
       @stores.inject({}) {|h, (k, s)| h[k] = s.clone; h}
     end
 
-    # Registers the cache store name with a type & options
-    # name<Symbol> : An optional symbol to give the cache.  :default is used if no name is given.
-    # klass<Class> : A store type.
-    # opts<Hash> : A hash to pass through to the store for configuration.
+    # Registers the cache store name with a type & options.
+    #
+    # @param [Symbol] name An optional symbol to give the cache.
+    #   `:default` is used if no name is given.
+    # @param [Class] klass A store type.
+    # @param [Hash] opts A hash to pass through to the store for
+    #   configuration.
     def self.register(name, klass = nil, opts = {})
       klass, opts = nil, klass if klass.is_a? Hash
       name, klass = default_store_name, name if klass.nil?
@@ -67,15 +71,15 @@ module Merb
 
       @stores[name] = (AdhocStore === klass) ? klass : klass.new(opts)
     end
-    
-    # Checks to see if a given store exists already.
+
+    # Checks if a given store exists already.
     def self.exists?(name)
       return true if self[name]
     rescue StoreNotFound
       return false
     end
 
-    # Default store name is :default.
+    # Default store name is `:default`.
     def self.default_store_name
       :default
     end

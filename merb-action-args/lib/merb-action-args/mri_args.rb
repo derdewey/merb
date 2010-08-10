@@ -57,17 +57,17 @@ class ParseTreeArray < Array
 end
 
 # Used in mapping controller arguments to the params hash.
-# NOTE: You must have the 'ruby2ruby' gem installed for this to work.
 #
-# ==== Examples
-#   # In PostsController
-#   def show(id)  #=> id is the same as params[:id]
+# @note You must have the 'ruby2ruby' gem installed for this to work.
+#
+# @example
+#     # In PostsController
+#     def show(id)  #=> id is the same as params[:id]
 module GetArgs
-  
-  # ==== Returns
-  # Array:: Method arguments and their default values.
+
+  # @return [Array] Method arguments and their default values.
   #
-  # ==== Examples
+  # @example
   #   class Example
   #     def hello(one,two="two",three)
   #     end

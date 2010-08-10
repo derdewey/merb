@@ -33,73 +33,71 @@ module Merb::Helpers::Form
     ret
   end
 
-  # Generates a form tag, which accepts a block that is not directly based on resource attributes
+  # Generates a form tag, which accepts a block that is not directly based
+  # on resource attributes.
   #
-  # ==== Parameters
-  # attrs<Hash>:: HTML attributes
+  #     <%= form :action => url(:controller => "foo", :action => "bar", :id => 1) do %>
+  #       <%= text_field :name => "first_name", :label => "First Name" %>
+  #       <%= submit "Create" %>
+  #     <% end =%>
   #
-  # ==== Returns
-  # String:: HTML
+  # Generates the HTML:
   #
-  # ==== Notes
-  #  * Block helpers use the <%= =%> syntax
-  #  * a multipart enctype is automatically set if the form contains a file upload field
+  #     <form action="/foo/bar/1" method="post">
+  #       <label for="first_name">First Name</label>
+  #       <input type="text" id="first_name" name="first_name" />
+  #       <input type="submit" value="Create" />
+  #     </form>
   #
-  # ==== Example
-  #   <%= form :action => url(:controller => "foo", :action => "bar", :id => 1) do %>
-  #     <%= text_field :name => "first_name", :label => "First Name" %>
-  #     <%= submit "Create" %>
-  #   <% end =%>
+  # @param [Hash] attrs HTML attributes
   #
-  #   Generates the HTML:
+  # @return [String] HTML
   #
-  #   <form action="/foo/bar/1" method="post">
-  #     <label for="first_name">First Name</label>
-  #     <input type="text" id="first_name" name="first_name" />
-  #     <input type="submit" value="Create" />
-  #   </form>
+  # @note Block helpers use the `<%= =%>` syntax
+  # @note A multipart enctype is automatically set if the form contains a
+  #   file upload field
   def form(*args, &blk)
     _singleton_form_context.form(*args, &blk)
   end
 
-  # Generates a resource specific form tag which accepts a block, this also provides automatic resource routing.
+  # Generates a resource specific form tag which accepts a block, this
+  # also provides automatic resource routing.
   #
-  # ==== Parameters
-  # name<Symbol>:: Model or Resource
-  # attrs<Hash>:: HTML attributes
-  #
-  # ==== Returns
-  # String:: HTML
-  #
-  # ==== Notes
-  #  * Block helpers use the <%= =%> syntax
-  #
-  # ==== Example
-  #   <%= form_for @person do %>
-  #     <%= text_field :first_name, :label => "First Name" %>
-  #     <%= text_field :last_name,  :label => "Last Name" %>
-  #     <%= submit "Create" %>
-  #   <% end =%>
+  #     <%= form_for @person do %>
+  #       <%= text_field :first_name, :label => "First Name" %>
+  #       <%= text_field :last_name,  :label => "Last Name" %>
+  #       <%= submit "Create" %>
+  #     <% end =%>
   #
   # The HTML generated for this would be:
   #
-  #   <form action="/people" method="post">
-  #     <label for="person_first_name">First Name</label>
-  #     <input type="text" id="person_first_name" name="person[first_name]" />
-  #     <label for="person_last_name">Last Name</label>
-  #     <input type="text" id="person_last_name" name="person[last_name]" />
-  #     <input type="submit" value="Create" />
-  #   </form>
+  #     <form action="/people" method="post">
+  #       <label for="person_first_name">First Name</label>
+  #       <input type="text" id="person_first_name" name="person[first_name]" />
+  #       <label for="person_last_name">Last Name</label>
+  #       <input type="text" id="person_last_name" name="person[last_name]" />
+  #       <input type="submit" value="Create" />
+  #     </form>
+  #
+  # @param [Model, Resource] name Model or Resource
+  # @param [Hash] attrs HTML attributes
+  #
+  # @return [String] HTML
+  #
+  # @note Block helpers use the `<%= =%>` syntax
   def form_for(name, attrs = {}, &blk)
     with_form_context(name, attrs.delete(:builder)) do
       current_form_context.form(attrs, &blk)
     end
   end
-  
-  # Creates a scope around a specific resource object like form_for, but doesnt create the form tags themselves.
-  # This makes fields_for suitable for specifying additional resource objects in the same form. 
+
+  # Creates a scope around a specific resource object like form_for, but
+  # does not create the form tags themselves. This makes fields_for
+  # suitable for specifying additional resource objects in the same form.
   #
-  # ==== Examples
+  # @param (see #form_for)
+  #
+  # @example
   #   <%= form_for @person do %>
   #     <%= text_field :first_name, :label => "First Name" %>
   #     <%= text_field :last_name,  :label => "Last Name" %>
@@ -117,33 +115,30 @@ module Merb::Helpers::Form
 
   # Provides the ability to create quick fieldsets as blocks for your forms.
   #
-  # ==== Parameters
-  # attrs<Hash>:: HTML attributes and options
-  #
-  # ==== Options
-  # +legend+:: Adds a legend tag within the fieldset
-  #
-  # ==== Returns
-  # String:: HTML
-  #
-  # ==== Notes
-  # Block helpers use the <%= =%> syntax
-  #
-  # ==== Example
-  #   <%= fieldset :legend => "Customer Options" do %>
-  #     ...your form elements
-  #   <% end =%>
+  #     <%= fieldset :legend => "Customer Options" do %>
+  #       ...your form elements
+  #     <% end =%>
   #
   # Generates the HTML:
   #
-  #   <fieldset>
-  #     <legend>Customer Options</legend>
-  #     ...your form elements
-  #   </fieldset>
+  #     <fieldset>
+  #       <legend>Customer Options</legend>
+  #       ...your form elements
+  #     </fieldset>
+  #
+  # @param [Hash] attrs HTML attributes and options
+  # @option attrs :legend
+  #   Adds a legend tag within the fieldset
+  #
+  # @return [String] HTML
+  #
+  # @note Block helpers use the `<%= =%>` syntax
   def fieldset(attrs = {}, &blk)
     _singleton_form_context.fieldset(attrs, &blk)
   end
 
+  # @see #fieldset
+  # @see #fields_for
   def fieldset_for(name, attrs = {}, &blk)
     with_form_context(name, attrs.delete(:builder)) do
       current_form_context.fieldset(attrs, &blk)
@@ -152,72 +147,65 @@ module Merb::Helpers::Form
 
   # Provides a generic HTML checkbox input tag.
   # There are two ways this tag can be generated, based on the
-  # option :boolean. If not set to true, a "magic" input is generated.
+  # option :boolean. If set to false, a "magic" input is generated.
   # Otherwise, an input is created that can be easily used for passing
   # an array of values to the application.
   #
-  # ==== Parameters
-  # method<Symbol>:: Resource attribute
-  # attrs<Hash>:: HTML attributes and options
+  # @param [Symbol] method Resource attribute
+  # @param [Hash] attrs HTML attributes and options
+  # @option attrs [Boolean] :boolean
+  #   If this is `true`, the input will generate a plain array of selected
+  #   options will be passed to the application, instead of a more complex
+  #   "bound" value.
+  # @todo Docs: proper example
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Example
+  # @example
   #   <%= check_box :name => "is_activated", :value => "1" %>
   #   <%= check_box :name => "choices[]", :boolean => false, :value => "dog" %>
   #   <%= check_box :name => "choices[]", :boolean => false, :value => "cat" %>
   #   <%= check_box :name => "choices[]", :boolean => false, :value => "weasle" %>
   #
-  # Used with a model:
-  #
+  # @example Used with a model:
   #   <%= check_box :is_activated, :label => "Activated?" %>
   def check_box; end
 
-  # Provides a HTML file input
+  # Provides a HTML file input.
   #
-  # ==== Parameters
-  # name<Symbol>:: Model or Resource
-  # attrs<Hash>:: HTML attributes
+  # @param [Symbol] name Model or Resource
+  # @param [Hash] attrs HTML attributes
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Example
+  # @example
   #   <%= file_field :name => "file", :label => "File" %>
   #
-  # Used with a model:
-  #
+  # @example Used with a model:
   #   <%= file_field :file, :label => "Choose a file" %>
   def file_field; end
 
-  # Provides a HTML hidden input field
+  # Provides a HTML hidden input field.
   #
-  # ==== Parameters
-  # name<Symbol>:: Model or Resource
-  # attrs<Hash>:: HTML attributes
+  # @param (see #file_field)
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Example
+  # @example
   #   <%= hidden_field :name => "secret", :value => "some secret value" %>
   #
-  # Used with a model:
-  #
+  # @example Used with a model:
   #   <%= hidden_field :identifier %>
   #   # => <input type="hidden" id="person_identifier" name="person[identifier]" value="#{@person.identifier}" />
   def hidden_field; end
 
   # Provides a generic HTML label.
   #
-  # ==== Parameters
-  # attrs<Hash>:: HTML attributes
+  # @param [Hash] attrs HTML attributes
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Example
+  # @example
   #   <%= label "Full Name", :for => "name" %> 
   #   => <label for="name">Full Name</label>
   def label(*args)
@@ -226,54 +214,44 @@ module Merb::Helpers::Form
 
   # Provides a HTML password input.
   #
-  # ==== Parameters
-  # name<Symbol>:: Model or Resource
-  # attrs<Hash>:: HTML attributes
+  # @param (see #file_field)
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Example
+  # @example
   #   <%= password_field :name => :password, :label => "Password" %>
   #   # => <label for="password">Password</label><input type="password" id="password" name="password" />
   #
-  # Used with a model:
-  #
+  # @example Used with a model:
   #   <%= password_field :password, :label => 'New Password' %>
   def password_field; end
 
-  # Provides a HTML radio input tag
+  # Provides a HTML radio input tag.
   #
-  # ==== Parameters
-  # method<Symbol>:: Resource attribute
-  # attrs<Hash>:: HTML attributes and options
+  # @param (see #check_box)
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Example
+  # @example
   #   <%= radio_button :name => "radio_options", :value => "1", :label => "One" %>
   #   <%= radio_button :name => "radio_options", :value => "2", :label => "Two" %>
   #   <%= radio_button :name => "radio_options", :value => "3", :label => "Three", :checked => true %>
   #
-  # Used with a model:
-  #
+  # @example Used with a model:
   #   <%= form_for @person do %>
   #     <%= radio_button :first_name %>
   #   <% end =%>
   def radio_button; end
 
   # Provides a radio group based on a resource attribute.
-  # This is generally used within a resource block such as +form_for+.
+  # This is generally used within a resource block such as {#form_for}.
   #
-  # ==== Parameters
-  # method<Symbol>:: Resource attribute
-  # arr<Array>:: Choices
+  # @param [Symbol] method Resource attribute
+  # @param [Array] arr Choices
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Examples
+  # @example
   #   <%# the labels are the options %>
   #   <%= radio_group :my_choice, [5,6,7] %>
   #
@@ -281,59 +259,56 @@ module Merb::Helpers::Form
   #   <%= radio_group :my_choice, [{:value => 5, :label => "five"}] %>
   def radio_group; end
 
-  # Provides a HTML select
+  # Provides a HTML select.
   #
-  # ==== Parameters
-  # method<Symbol>:: Resource attribute
-  # attrs<Hash>:: HTML attributes and options
+  # @param (see #check_box)
+  # @option attrs :prompt
+  #   Adds an additional option tag with the provided string with no value.
+  # @option attrs :selected
+  #   The value of a selected object, which may be either a string or an
+  #   array.
+  # @option attrs :include_blank
+  #   Adds an additional blank option tag with no value.
+  # @option attrs :collection
+  #   The collection for the select options
+  # @option attrs [Symbol] :text_method
+  #   Method to determine text of an option. For example,
+  #   `:text_method => :name`  will call .name on your record object for
+  #   what text to display.
+  # @option attrs [Symbol] :value_method
+  #   Method to determine value of an option.
   #
-  # ==== Options
-  # +prompt+:: Adds an additional option tag with the provided string with no value.
-  # +selected+:: The value of a selected object, which may be either a string or an array.
-  # +include_blank+:: Adds an additional blank option tag with no value.
-  # +collection+:: The collection for the select options
-  # +text_method+:: Method to determine text of an option (as a symbol). Ex: :text_method => :name  will call .name on your record object for what text to display.
-  # +value_method+:: Method to determine value of an option (as a symbol).
+  # @return [String] HTML
   #
-  # ==== Returns
-  # String:: HTML
-  #
-  # ==== Example
+  # @example
   #   <%= select :name, :collection => %w(one two three) %>
   def select; end
 
-  # Provides a HTML textarea tag
+  # Provides a HTML textarea tag.
   #
-  # ==== Parameters
-  # contents<String>:: Contents of the text area
-  # attrs<Hash>:: HTML attributes
+  # @param [String] contents Contents of the text area
+  # @param [Hash] attrs HTML attributes
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Example
+  # @example
   #   <%= text_area "my comments", :name => "comments" %>
   #
-  # Used with a model:
-  #
+  # @example Used with a model:
   #   <%= text_area :comments %>
   def text_area; end
 
-  # Provides a HTML text input tag
+  # Provides a HTML text input tag.
   #
-  # ==== Parameters
-  # name<Symbol>:: Model or Resource
-  # attrs<Hash>:: HTML attributes
+  # @param (see #form_for)
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Example
+  # @example
   #   <%= text_field :name => :fav_color, :label => "Your Favorite Color" %>
   #   # => <label for="fav_color">Your Favorite Color</label><input type="text" id="fav_color" name="fav_color" />
   #
-  # Used with a model:
-  #
+  # @example Used with a model:
   #   <%= form_for @person do %>
   #     <%= text_field :first_name, :label => "First Name" %>
   #   <% end =%>
@@ -355,42 +330,37 @@ module Merb::Helpers::Form
 
   # Generates a HTML button.
   #
-  # ==== Parameters
-  # contents<String>:: HTML contained within the button tag
-  # attrs<Hash>:: HTML attributes
+  # @param (see #text_area)
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Notes
-  #  * Buttons do not always work as planned in IE
-  #    http://www.peterbe.com/plog/button-tag-in-IE
-  #  * Not all mobile browsers support buttons
-  #    http://nickcowie.com/2007/time-to-stop-using-the-button-element/
+  # @note Buttons do not always work as planned in IE:
+  #   [read more...](http://www.peterbe.com/plog/button-tag-in-IE)
+  # @note Not all mobile browsers support buttons:
+  #   [read more...](http://nickcowie.com/2007/time-to-stop-using-the-button-element/)
   #
-  # ==== Example
+  # @example
   #   <%= button "Initiate Launch Sequence" %>
   def button(contents, attrs = {})
     current_form_context.button(contents, attrs)
   end
-  
+
   # Generates a HTML delete button.
   #
-  # If an object is passed as first parameter, Merb will try to use the resource url for the object
-  # If the object doesn't have a resource view, pass a url
+  # If an object is passed as first parameter, Merb will try to use the
+  # resource URL for the object. If the object doesn't have a resource
+  # view, pass a URL.
   #
-  # ==== Parameters
-  # object_or_url<Object> or <String>:: Object to delete or URL to send the request to
-  # contents<String>:: HTML contained within the button tag
-  # attrs<Hash>:: HTML attributes
+  # @param [Object, String] object_or_url Object to delete or URL to send
+  #   the request to.
+  # @param [String] contents HTML contained within the button tag.
+  # @param [Hash] attrs HTML attributes.
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Example
+  # @example
   #   <%= delete_button @article, "Delete article now", :class => 'delete-btn' %>
   #   <%= delete_button url(:article, @article)%>
-  #
   def delete_button(object_or_url, contents="Delete", attrs = {})
     url = object_or_url.is_a?(String) ? object_or_url : resource(object_or_url)
     button_text = (contents || 'Delete')
@@ -402,32 +372,29 @@ module Merb::Helpers::Form
 
   # Generates a HTML submit button.
   #
-  # ==== Parameters
-  # value<String>:: Sets the value="" attribute
-  # attrs<Hash>:: HTML attributes
+  # @param [String] value Sets the `value` attribute.
+  # @param [Hash] attrs HTML attributes.
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Example
+  # @example
   #   <%= submit "Process" %>
   def submit(contents, attrs = {})
     current_form_context.submit(contents, attrs)
   end
 
-  # Provides a HTML formatted display of resource errors in an unordered list with a h2 form submission error
+  # Provides a HTML formatted display of resource errors in an unordered
+  # list with a H2 form submission error.
   #
-  # ==== Parameters
-  # obj<Object>:: Model or Resource
-  # error_class<String>:: CSS class to use for error container
-  # build_li<String>:: Custom li tag to wrap each error in
-  # header<String>:: Custom header text for the error container
-  # before<Boolean>:: Display the errors before or inside of the form
+  # @param [Object] obj Model or Resource
+  # @param [String] error_class CSS class to use for error container.
+  # @param [String] build_li Custom LI tag to wrap each error in.
+  # @param [String] header Custom header text for the error container.
+  # @param [Boolean] before Display the errors before or inside of the form.
   #
-  # ==== Returns
-  # String:: HTML
+  # @return [String] HTML
   #
-  # ==== Examples
+  # @example
   #   <%= error_messages_for @person %>
   #   <%= error_messages_for @person {|errors| "You can has probs nao: #{errors.size} of em!"}
   #   <%= error_messages_for @person, lambda{|error| "<li class='aieeee'>#{error.join(' ')}"} %>

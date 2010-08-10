@@ -204,31 +204,34 @@ module Merb::Helpers::Form::Builder
     def update_unbound_radio_button(attrs)
       attrs[:checked] = "checked" if attrs.delete(:checked)
     end
-    
-    # Accepts a collection (hash, array, enumerable, your type) and returns a string of option tags. 
-    # Given a collection where the elements respond to first and last (such as a two-element array), 
-    # the "lasts" serve as option values and the "firsts" as option text. Hashes are turned into
-    # this form automatically, so the keys become "firsts" and values become lasts. If selected is
-    # specified, the matching "last" or element will get the selected option-tag. Selected may also
-    # be an array of values to be selected when using a multiple select.
+
+    # Accepts a collection (hash, array, enumerable, your type) and returns
+    # a string of option tags. Given a collection where the elements respond
+    # to `first` and `last` (such as a two-element array), the "lasts" serve
+    # as option values and the "firsts" as option text. Hashes are turned
+    # into this form automatically, so the keys become "firsts" and values
+    # become lasts. If selected is specified, the matching "last" or element
+    # will get the selected option-tag. Selected may also be an array of
+    # values to be selected when using a multiple select.
     #
-    # ==== Parameters
-    # attrs<Hash>:: HTML attributes and options
+    # @param [Hash] attrs HTML attributes and options
     #
-    # ==== Options
-    # +selected+:: The value of a selected object, which may be either a string or an array.
-    # +prompt+:: Adds an addtional option tag with the provided string with no value.
-    # +include_blank+:: Adds an additional blank option tag with no value.
+    # @option attrs :selected
+    #   The value of a selected object, which may be either a string or an
+    #   array.
+    # @option attrs :prompt Adds an addtional option tag with the provided
+    #   string with no value.
+    # @option attrs :include_blank
+    #   Adds an additional blank option tag with no value.
     #
-    # ==== Returns
-    # String:: HTML
+    # @return [String] HTML
     #
-    # ==== Examples
-    #   <%= options_for [["apple", "Apple Pie"], ["orange", "Orange Juice"]], :selected => "orange"
-    #   => <option value="apple">Apple Pie</option><option value="orange" selected="selected">Orange Juice</option>
+    # @example
+    #     <%= options_for [["apple", "Apple Pie"], ["orange", "Orange Juice"]], :selected => "orange"
+    #     => <option value="apple">Apple Pie</option><option value="orange" selected="selected">Orange Juice</option>
     #
-    #   <%= options_for [["apple", "Apple Pie"], ["orange", "Orange Juice"]], :selected => ["orange", "apple"], :prompt => "Select One"
-    #   => <option value="">Select One</option><option value="apple" selected="selected">Apple Pie</option><option value="orange" selected="selected">Orange Juice</option>
+    #     <%= options_for [["apple", "Apple Pie"], ["orange", "Orange Juice"]], :selected => ["orange", "apple"], :prompt => "Select One"
+    #     => <option value="">Select One</option><option value="apple" selected="selected">Apple Pie</option><option value="orange" selected="selected">Orange Juice</option>
     def options_for(attrs)
       blank, prompt = attrs.delete(:include_blank), attrs.delete(:prompt)
       b = blank || prompt ? tag(:option, prompt || "", :value => "") : ""

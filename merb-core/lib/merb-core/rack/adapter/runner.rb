@@ -1,19 +1,15 @@
 module Merb
-  
+
   module Rack
-    
+
     class Runner
-      # ==== Parameters
-      # opts<Hash>:: Options for the runner (see below).
+      # @param [Hash] opts Options for the runner.
+      # @option opts [String] :runner_code The code to run.
       #
-      # ==== Options (opts)
-      # :runner_code<String>:: The code to run.
+      # @note If `opts[:runner_code]` matches a filename, that file will be read
+      #   and the contents executed. Otherwise the code will be executed directly.
       #
-      # ==== Notes
-      # If opts[:runner_code] matches a filename, that file will be read and
-      # the contents executed. Otherwise the code will be executed directly.
-      #
-      # :api: plugin
+      # @api plugin
       def self.start(opts={})
         Merb::Server.change_privilege
 
@@ -36,7 +32,7 @@ module Merb
             end
           end
           exit
-        end  
+        end
       end
     end
   end

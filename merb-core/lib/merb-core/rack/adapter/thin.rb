@@ -5,9 +5,9 @@ module Merb
   module Rack
 
     class Thin < Merb::Rack::AbstractAdapter
-      # start a Thin server on given host and port.
 
-      # :api: plugin
+      # start a Thin server on given host and port.
+      # @api plugin
       def self.new_server(port)
         Merb::Dispatcher.use_mutex = false
         
@@ -24,13 +24,13 @@ module Merb
         end
       end
 
-      # :api: plugin
+      # @api plugin
       def self.start_server
         ::Thin::Logging.silent = true
         @server.start
       end
-      
-      # :api: plugin
+
+      # @api plugin
       def self.stop(status = 0)
         if @server
           @server.stop

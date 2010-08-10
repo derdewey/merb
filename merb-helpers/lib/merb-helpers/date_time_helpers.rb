@@ -1,12 +1,16 @@
 module Merb
   module Helpers
-    # Provides a number of methods for displaying and dealing with dates and times
+    # Provides a number of methods for displaying and dealing with
+    # dates and times.
     #
-    # Parts were strongly based on http://ar-code.svn.engineyard.com/plugins/relative_time_helpers/, and
-    # active_support
+    # Parts were strongly based on [http://ar-code.svn.engineyard.com/plugins/relative_time_helpers/](http://ar-code.svn.engineyard.com/plugins/relative_time_helpers/),
+    # and active_support.
     #
-    # The key methods are `relative_date`, `relative_date_span`, and `relative_time_span`.  This also gives
-    # you the Rails style Time DSL for working with numbers eg. 3.months.ago or 5.days.until(1.year.from_now)
+    # The key methods are {#relative_date}, {#relative_date_span}, and
+    # {#relative_time_span}.  This also gives you the Rails style Time DSL
+    # for working with numbers eg:
+    #     3.months.ago
+    #     5.days.until(1.year.from_now)
     module DateAndTime
       @@time_class = Time
       @@time_output = {
@@ -20,30 +24,28 @@ module Merb
       def self.time_class
         @@time_class
       end
-      
-      # ==== Parameters
-      # format<Symbol>:: time format to use
-      # locale<String, Symbol>:: An optional value which can be used by localization plugins
+
+      # @param [Symbol] format Time format to use.
+      # @param [String, Symbol] locale An optional value which can be
+      #   used by localization plugins
       #
-      # ==== Returns
-      # String:: a string used to format time using #strftime
+      # @return [String] A string used to format time using {#strftime}
       def self.time_output(format, locale=nil)
         @@time_output[format]
       end
-      
-      # Gives you a relative date in an attractive format
+
+      # Gives you a relative date in an attractive format.
       #
-      # ==== Parameters
-      # time<~to_date>:: The Date or Time to test
-      # locale<String, Symbol>:: An optional value which can be used by localization plugins
+      # @param [#to_date] time The Date or Time to test.
+      # @param [String, Symbol] locale An optional value which can be used
+      #   by localization plugins
       #
-      # ==== Returns
-      # String:: Relative date
+      # @return [String] Relative date
       #
-      # ==== Examples
-      #   relative_date(Time.now.utc) => "today"
-      #   relative_date(5.days.ago) => "March 5th"
-      #   relative_date(1.year.ago) => "March 10th, 2007"
+      # @example
+      #   relative_date(Time.now.utc) # => "today"
+      #   relative_date(5.days.ago)   # => "March 5th"
+      #   relative_date(1.year.ago)   # => "March 10th, 2007"
       def relative_date(time, locale=nil)
         date  = time.to_date
         today = DateAndTime.time_class.now.to_date
@@ -59,20 +61,22 @@ module Merb
           time.strftime_ordinalized(fmt, locale)
         end
       end
-      
-      # Gives you a relative date span in an attractive format
+
+      # Gives you a relative date span in an attractive format.
       #
-      # ==== Parameters
-      # times<~first,~last>:: The Dates or Times to test
+      # @param [#first, #last] times The Dates or Times to test
       #
-      # ==== Returns
-      # String:: The sexy relative date span
+      # @return [String] The sexy relative date span
       #
-      # ==== Examples
-      #   relative_date([1.second.ago, 10.seconds.ago]) => "March 10th"
-      #   relative_date([1.year.ago, 1.year.ago) => "March 10th, 2007"
-      #   relative_date([Time.now, 1.day.from_now]) => "March 10th - 11th"
-      #   relative_date([Time.now, 1.year.ago]) => "March 10th, 2007 - March 10th, 2008"
+      # @example
+      #   relative_date([1.second.ago, 10.seconds.ago])
+      #   # => "March 10th"
+      #   relative_date([1.year.ago, 1.year.ago)
+      #   # => "March 10th, 2007"
+      #   relative_date([Time.now, 1.day.from_now])
+      #   # => "March 10th - 11th"
+      #   relative_date([Time.now, 1.year.ago])
+      #   # => "March 10th, 2007 - March 10th, 2008"
       def relative_date_span(times)
         times = [times.first, times.last].collect! { |t| t.to_date }
         times.sort!
@@ -89,20 +93,22 @@ module Merb
           str
         end
       end
-      
-      # Gives you a relative date span in an attractive format
+
+      # Gives you a relative date span in an attractive format.
       #
-      # ==== Parameters
-      # times<~first,~last>:: The Dates or Times to test
+      # @param (see #relative_date_span)
       #
-      # ==== Returns
-      # String:: The sexy relative time span
+      # @return [String] The sexy relative time span
       #
-      # ==== Examples
-      #   relative_time_span([1.second.ago, 10.seconds.ago]) => "12:00 - 12:09 AM March 10th"
-      #   relative_time_span([1.year.ago, 1.year.ago) => "12:09 AM March 10th, 2007"
-      #   relative_time_span([Time.now, 13.hours.from_now]) => "12:09 AM - 1:09 PM March 10th"
-      #   relative_time_span([Time.now, 1.year.ago]) => "12:09 AM March 10th, 2007 - 12:09 AM March 10th, 2008"
+      # @example
+      #   relative_time_span([1.second.ago, 10.seconds.ago])
+      #   # => "12:00 - 12:09 AM March 10th"
+      #   relative_time_span([1.year.ago, 1.year.ago)
+      #   # => "12:09 AM March 10th, 2007"
+      #   relative_time_span([Time.now, 13.hours.from_now])
+      #   # => "12:09 AM - 1:09 PM March 10th"
+      #   relative_time_span([Time.now, 1.year.ago])
+      #   # => "12:09 AM March 10th, 2007 - 12:09 AM March 10th, 2008"
       def relative_time_span(times)
         times = [times.first, times.last].collect! { |t| t.to_time }
         times.sort!
@@ -127,25 +133,25 @@ module Merb
           str.to_s
         end
       end
-      
-      # Condenses time... very similar to time_ago_in_words in ActionPack
+
+      # Condenses time. Very similar to `time_ago_in_words` in ActionPack
       #
-      # ==== Parameters
-      # from_time<~to_time>:: The Date or Time to start from
-      # to_time<~to_time>:: The Date or Time to go to, Defaults to Time.now.utc
-      # include_seconds<Boolean>:: Count the seconds initially, Defaults to false
-      # locale<String, Symbol>:: An optional value which can be used by localization plugins
+      # @param [#to_time] from_time The Date or Time to start from.
+      # @param [#to_time] to_time The Date or Time to go to.
+      # @param [Boolean] include_seconds Count the seconds initially.
+      # @param [String, Symbol] locale An optional value which can be used
+      #   by localization plugins
       #
-      # ==== Returns
-      # String:: The time distance
+      # @return [String] The time distance
       #
-      # ==== Examples
-      # time_lost_in_words(3.minutes.from_now)           # => 3 minutes
-      # time_lost_in_words(Time.now - 15.hours)          # => 15 hours
-      # time_lost_in_words(Time.now, 3.minutes.from_now) # => 3 minutes
-      # time_lost_in_words(Time.now)                     # => less than a minute
-      # time_lost_in_words(Time.now, Time.now, true)     # => less than 5 seconds
-      #
+      # @example
+      #   time_lost_in_words(3.minutes.from_now)           # => 3 minutes
+      #   time_lost_in_words(Time.now - 15.hours)          # => 15 hours
+      #   time_lost_in_words(Time.now, 3.minutes.from_now) # => 3 minutes
+      #   time_lost_in_words(Time.now)
+      #   # => less than a minute
+      #   time_lost_in_words(Time.now, Time.now, true)
+      #   # => less than 5 seconds
       def time_lost_in_words(from_time, to_time = Time.now.utc, include_seconds = false, locale=nil)
         from_time = from_time.to_time if from_time.respond_to?(:to_time)
         to_time = to_time.to_time if to_time.respond_to?(:to_time)

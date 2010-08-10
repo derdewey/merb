@@ -17,3 +17,12 @@ lib/merb-more.rb
 *.diff
 *.gem
 .rvmrc
+doc
+doc/*
+*/doc
+*/doc/*
+.yardoc
+.yardoc/*
+*/.yardoc
+*/.yardoc/*
+*.rbc

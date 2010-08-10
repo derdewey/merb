@@ -8,6 +8,10 @@ module Merb::Cache
   class MemcachedStore < AbstractStore
     attr_accessor :namespace, :servers, :memcached
 
+    # @param [Hash] config Configuration options
+    # @option config [String] :namespace
+    # @option config [Array<String>] :servers (["127.0.0.1:11211"])
+    #   Memcache servers.
     def initialize(config = {})
       @namespace = config[:namespace]
       @servers = config[:servers] || ["127.0.0.1:11211"]
@@ -52,9 +56,8 @@ module Merb::Cache
     # returns true/false/nil based on if data identified by the key & parameters
     # is persisted in the store.
     #
-    # With Memcached 1.2 protocol the only way to
-    # find if key exists in the cache is to read it.
-    # It is very fast and shouldn't be a concern.
+    # With Memcached 1.2 protocol the only way to find if key exists in
+    # the cache is to read it. It is very fast and shouldn't be a concern.
     def exists?(key, parameters = {})
       begin
         @memcached.get(normalize(key, parameters)) && true
@@ -87,21 +90,27 @@ module Merb::Cache
 
     # Establishes connection to Memcached.
     #
-    # Use :buffer_requests option to use bufferring,
-    # :no_block to use non-blocking async I/O.
-    # :support_cas to support CAS
+    # @param [Hash] config Configuration options passed to memcached. Only
+    #   the options mentioned below are passed through.
+    # @option config [Boolean] :buffer_requests (false)
+    #   Use bufferring
+    # @option config [Boolean] :no_block (false)
+    #   Use non-blocking async I/O.
+    # @option config [Boolean] :support_cas (false)
+    #   Support CAS.
+    #
+    # @see http://blog.evanweaver.com/files/doc/fauna/memcached/classes/Memcached.html memcached gem documentation
     def connect(config = {})
       @memcached = ::Memcached.new(@servers, config.only(:buffer_requests, :no_block, :support_cas).merge(:namespace => @namespace))
     end
 
-    # Returns cache key calculated from base key
-    # and SHA2 hex from parameters.
+    # Returns cache key calculated from base key and SHA2 hex from
+    # parameters.
     def normalize(key, parameters = {})
       parameters.empty? ? "#{key}" : "#{key}--#{parameters.to_sha2}"
     end
 
-    # Returns expiration timestamp if :expire_in key is
-    # given.
+    # Returns expiration timestamp if `:expire_in` key is given.
     def expire_time(conditions = {})
       if t = conditions[:expire_in]
         Time.now + t

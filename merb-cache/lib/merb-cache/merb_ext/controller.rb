@@ -34,7 +34,10 @@ module Merb::Cache::CacheMixin
       end
 
       after("_eager_cache_#{trigger_action}_to_#{target_controller.name.snake_case}__#{target_action}_after", conditions.only(:if, :unless).merge(:with => [target_controller, target_action, conditions, blk], :only => trigger_action))
-      alias_method "_eager_cache_#{trigger_action}_to_#{target_controller.name.snake_case}__#{target_action}_after", :_eager_cache_after
+
+      #FIXME: workaround for long filename in YARD when using 1.9-style parser
+      #alias_method "_eager_cache_#{trigger_action}_to_#{target_controller.name.snake_case}__#{target_action}_after", :_eager_cache_after
+      send(:alias_method, "_eager_cache_#{trigger_action}_to_#{target_controller.name.snake_case}__#{target_action}_after", :_eager_cache_after)
     end
 
     def eager_dispatch(action, params = {}, env = {}, blk = nil)
@@ -162,7 +165,7 @@ module Merb::Cache::CacheMixin
     Merb::Cache.default_store_name
   end
 
-  #ugly, please make me purdy'er
+  # @todo Code: ugly, please make me purdy'er
   def _parameters_and_conditions(conditions)
     parameters = {}
 
@@ -189,4 +192,5 @@ module Merb::Cache::CacheMixin
 
     return parameters, conditions.except(:params, :store, :stores)
   end
+
 end

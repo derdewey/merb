@@ -1,14 +1,11 @@
 module Merb
   module Rack
-    
+
     class FastCGI
-      # ==== Parameters
-      # opts<Hash>:: Options for FastCGI (see below).
+      # @param [Hash] opts Options for FastCGI.
+      # @option opts [String] :app The application name.
       #
-      # ==== Options (opts)
-      # :app<String>>:: The application name.
-      #
-      # :api: plugin
+      # @api plugin
       def self.start(opts={})
         Merb.logger.warn!("Using FastCGI adapter")
         Merb::Server.change_privilege

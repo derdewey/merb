@@ -1,23 +1,17 @@
 module Merb::Helpers::Text
-  # Allows you to cycle through elements in an array
+  # Allows you to cycle through elements in an array.
   #
-  # ==== Parameters
-  # values<Array>:: Array of objects to cycle through
-  # values<Hash>:: Last element of array can be a hash with the key of
-  #                :name to specify the name of the cycle
+  # @param [Array, Hash] values Array of objects to cycle through. The last
+  #   element of array can be a hash with the key of `:name` to specify the
+  #   name of the cycle.
   #
-  # ==== Returns
-  # String
+  # @return [String]
   #
-  # ==== Notes
-  # * Default name is :default
+  # @note Default name is `:default`.
   #
-  # ==== Example
-  # <%= 5.times { cycle("odd! ","even! "} %>
-  #
-  # Generates:
-  #
-  # odd! even! odd! even! odd!
+  # @example
+  #     5.times { cycle("odd! ","even! "}
+  #     # => "odd! even! odd! even! odd! "
   def cycle(*values)
     options = extract_options_from_args!(values) || {}
     key = (options[:name] || :default).to_sym
@@ -30,26 +24,21 @@ module Merb::Helpers::Text
     values.at( (current + 1) % values.length).to_s
   end
 
-  # Allows you to reset a cycle
+  # Reset a cycle.
   #
-  # ==== Parameters
-  # name<Symbol|String>:: Name of the cycle
+  # @param [Symbol, String] name Name of the cycle.
   #
-  # ==== Returns
-  # True if successful, otherwise nil
+  # @return [true, nil] True if successful, otherwise nil.
+  # @todo Docs, correctness, true/false would be better?
   #
-  # ==== Notes
-  # * Default name is :default
+  # @note Default name is `:default`.
   #
-  # ==== Example
-  # <%= cycle("odd! ","even! ","what comes after even?") %>
-  # <%= cycle("odd! ","even! ","what comes after even?") %>
-  # <% reset_cycle %>
-  # <%= cycle("odd! ","even! ","what comes after even?") %>
-  #
-  # Generates:
-  #
-  # odd! even! odd!
+  # @example
+  #   cycle("odd! ","even! ","what comes after even?")
+  #   cycle("odd! ","even! ","what comes after even?")
+  #   reset_cycle
+  #   cycle("odd! ","even! ","what comes after even?")
+  #   # => "odd! even! odd! "
   def reset_cycle(name = :default)
     (@cycle_positions[name.to_sym] = nil) &&
       true if @cycle_positions && @cycle_positions[name.to_sym]

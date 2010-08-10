@@ -1,0 +1,9 @@
+# Merb
+
+Merb is a web development framework. For more information, check out:
+
+* The [project website][merbweb]
+* The [git repository][merbgit]
+
+[merbweb]: http://www.merbivore.com/
+[merbgit]: http://github.com/merb

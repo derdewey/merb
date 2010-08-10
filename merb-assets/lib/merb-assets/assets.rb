@@ -1,39 +1,35 @@
 module Merb
   module Assets
-    
+
     # Check whether the assets should be bundled.
     #
-    # ==== Returns
-    # Boolean::
-    #   True if the assets should be bundled (e.g., production mode or
-    #   :bundle_assets is explicitly enabled).
+    # @return [Boolean] True if the assets should be bundled (e.g.,
+    #   production mode or `:bundle_assets` is explicitly enabled).
     def self.bundle?
       (Merb.environment == 'production') ||
       (!!Merb::Config[:bundle_assets])
     end
-    
+
     # Helpers for handling asset files.
     module AssetHelpers
       ASSET_FILE_EXTENSIONS = {
         :javascript => ".js",
         :stylesheet => ".css"
       }
-      
-      # Returns the URI path to a particular asset file. If +local_path+ is
-      # true, returns the path relative to the Merb.root, not the public
-      # directory. Uses the path_prefix, if any is configured.
-      # 
-      # ==== Parameters
-      # asset_type<Symbol>:: Type of the asset (e.g. :javascript).
-      # filename<~to_s>:: The path to the file.
-      # local_path<Boolean>::
-      #   If true, the returned path will be relative to the Merb.root,
-      #   otherwise it will be the public URI path. Defaults to false.
+
+      # Returns the URI path to a particular asset file. If `local_path` is
+      # true, returns the path relative to the `Merb.root`, not the public
+      # directory. Uses the `path_prefix`, if any is configured.
       #
-      # ==== Returns
-      # String:: The path to the asset.
+      # @param [Symbol] asset_type Type of the asset, e.g., `:javascript`.
+      # @param [#to_s] filename The path to the file.
+      # @param [Boolean] local_path If true, the returned path will be
+      #   relative to the `Merb.root`, otherwise it will be the public URI
+      #   path.
       #
-      # ==== Examples
+      # @return [String] The path to the asset.
+      #
+      # @example
       #   asset_path(:javascript, :dingo)
       #   # => "/javascripts/dingo.js"
       #
@@ -58,24 +54,22 @@ module Merb
         end
       end
     end
-    
-    # Helper for creating unique paths to a file name
-    # Can increase speed for browsers that are limited to a certain number of connections per host
-    # for downloading static files (css, js, images...)
+
+    # Helper for creating unique paths to a file name.
+    # Can increase speed for browsers that are limited to a certain
+    # number of connections per host for downloading static files (css,
+    # js, images, etc.)
     class UniqueAssetPath
       class << self
-        # Builds the path to the file based on the name
-        # 
-        # ==== Parameters
-        # filename<String>:: Name of file to generate path for
+        # Builds the path to the file based on the name.
         #
-        # ==== Returns
-        # String:: The path to the asset.
+        # @param [String] filename Name of file to generate path for
         #
-        # ==== Examples
+        # @return [String] The path to the asset.
+        #
+        # @example
         #   build("/javascripts/my_fancy_script.js")
         #   # => "https://assets5.my-awesome-domain.com/javascripts/my_fancy_script.js"
-        #
         def build(filename)
           config = Merb::Plugins.config[:asset_helpers]
           #%{#{(USE_SSL ? 'https' : 'http')}://#{sprintf(config[:asset_domain],self.calculate_host_id(file))}.#{config[:domain]}/#{filename}}
@@ -87,8 +81,8 @@ module Merb
         end
       
         protected
-        
-        # Calculates the id for the host
+
+        # Calculates the id for the host.
         def calculate_host_id(filename)
           ascii_total = 0
           filename.each_byte {|byte|
@@ -98,90 +92,82 @@ module Merb
         end
       end
     end
-    
+
     # An abstract class for bundling text assets into single files.
+    #
+    # @abstract Override {#asset_type} in your implementation.
     class AbstractAssetBundler
       
       class_inheritable_accessor :cached_bundles
       self.cached_bundles ||= []
       
       class << self
-        
+
         # Mark a bundle as cached.
         #
-        # ==== Parameters
-        # name<~to_s>:: Name of the bundle
-        #
+        # @param [#to_s] name Name of the bundle.
         def cache_bundle(name)
           cached_bundles.push(name.to_s)
         end
-        
+
         # Purge a bundle from the cache.
         #
-        # ==== Parameters
-        # name<~to_s>:: Name of the bundle
+        # @param (see #cache_bundle)
         #
         def purge_bundle(name)
           cached_bundles.delete(name.to_s)
         end
-        
+
         # Test if a bundle has been cached.
         #
-        # ==== Parameters
-        # name<~to_s>:: Name of the bundle
+        # @param (see #cache_bundle)
         #
-        # ==== Returns
-        # Boolean:: Whether the bundle has been cached or not.
+        # @return [Boolean] Whether the bundle has been cached or not.
         def cached_bundle?(name)
           cached_bundles.include?(name.to_s)
         end
-        
-        # ==== Parameters
-        # &block:: A block to add as a post-bundle callback.
+
+        # @yield [filename] A block to add as a post-bundle callback.
         #
-        # ==== Examples
+        # @example
         #   add_callback { |filename| `yuicompressor #{filename}` }
         def add_callback(&block)
           callbacks << block
         end
         alias_method :after_bundling, :add_callback
-        
+
         # Retrieve existing callbacks.
         #
-        # ==== Returns
-        # Array[Proc]:: An array of existing callbacks.
+        # @return [Array<Proc>] An array of existing callbacks.
         def callbacks
           @callbacks ||= []
           return @callbacks
         end
-        
+
         # The type of asset for which the bundler is responsible. Override
         # this method in your bundler code.
         #
-        # ==== Raises
-        # NotImplementedError:: This method is implemented by the bundler.
+        # @raise [NotImplementedError] This method is implemented by the
+        #   bundler.
         #
-        # ==== Returns
-        # Symbol:: The type of the asset
+        # @return [Symbol] The type of the asset.
         def asset_type
           raise NotImplementedError, "should return a symbol for the first argument to be passed to asset_path"
         end
       end
 
-      # ==== Parameters
-      # name<~to_s>::
-      #   Name of the bundle. If name is true, it will be converted to :all.
-      # *files<String>:: Names of the files to bundle.
+      # @param [#to_s] name Name of the bundle. If name is true, it will
+      #   be converted to `:all`.
+      # @param [String] *files Names of the files to bundle.
       def initialize(name, *files)
         @bundle_name = name == true ? :all : name
         @bundle_filename = Merb.root / asset_path(self.class.asset_type, @bundle_name, true)
         @files = files.map { |f| Merb.root / asset_path(self.class.asset_type, f, true) }
       end
-      
+
       # Creates the new bundled file, executing all the callbacks.
       #
-      # ==== Returns
-      # Symbol:: Name of the bundle.
+      # @return [Symbol] Name of the bundle.
       def bundle!
         # TODO: push it out to the helper level so we don't have to create the helper object.
         unless self.class.cached_bundle?(@bundle_name)
@@ -203,12 +189,11 @@ module Merb
     protected
       
       include Merb::Assets::AssetHelpers # for asset_path
-      
+
       # Bundle all the files into one.
       #
-      # ==== Parameters
-      # filename<String>:: Name of the bundle file.
-      # *files<String>:: Filenames to be bundled.
+      # @param [String] filename Name of the bundle file.
+      # @param [String] *files Filenames to be bundled.
       def bundle_files(filename, *files)
         File.open(filename, "w") do |f|
           f.flock(File::LOCK_EX)
@@ -218,26 +203,24 @@ module Merb
       end
       
     end
-    
-    # Bundles javascripts into a single file:
-    # 
-    #   javascripts/#{name}.js
+
+    # Bundles javascripts into a single file
+    #
+    #     javascripts/#{name}.js
     class JavascriptAssetBundler < AbstractAssetBundler
 
-      # ==== Returns
-      # Symbol:: The asset type, i.e. :javascript.
+      # @return [Symbol] The asset type, i.e., `:javascript`.
       def self.asset_type
         :javascript
       end
     end
-    
+
     # Bundles stylesheets into a single file:
-    # 
-    #   stylesheets/#{name}.css
+    #
+    #     stylesheets/#{name}.css
     class StylesheetAssetBundler < AbstractAssetBundler
 
-      # ==== Returns
-      # Symbol:: The asset type, i.e. :stylesheet.
+      # @return [Symbol] The asset type, i.e., `:stylesheet`.
       def self.asset_type
         :stylesheet
       end

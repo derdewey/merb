@@ -1,17 +1,16 @@
 module Merb
   class Worker
-    
-    # :api: private
+
+    # @api private
     attr_accessor :thread
-    
+
     class << self
-      # ==== Returns
-      # Merb::Worker:: instance of a worker.
-      # 
-      # :api: private
+      # @return [Merb::Worker] instance of a worker.
+      #
+      # @api private
       def start
         @worker ||= new
-        Merb.at_exit do 
+        Merb.at_exit do
           if Merb::Dispatcher.work_queue.empty?
             @worker.thread.abort_on_exception = false
             @worker.thread.raise
@@ -20,30 +19,27 @@ module Merb
           end
         end
         @worker
-      end      
-      
-      # ==== Returns
-      # Whether the Merb::Worker instance is already started.
+      end
+
+      # @return [Boolean] Whether the `Merb::Worker` instance is already started.
       #
-      # :api: private
+      # @api private
       def started?
         !@worker.nil?
       end
 
-      # ==== Returns
-      # Whether the Merb::Worker instance thread is alive
+      # @return [Boolean] Whether the `Merb::Worker` instance thread is alive
       #
-      # :api: private
+      # @api private
       def alive?
         started? and @worker.thread.alive?
       end
 
       # restarts the worker thread
       #
-      # ==== Returns
-      # Merb::Worker:: instance of a worker.
+      # @return [Merb::Worker] instance of a worker.
       #
-      # :api: private
+      # @api private
       def restart
         # if we have a worker or thread, kill it.
         if started?
@@ -53,10 +49,10 @@ module Merb
         start
       end
     end
-    
+
     # Creates a new worker thread that loops over the work queue.
-    # 
-    # :api: private
+    #
+    # @api private
     def initialize
       @thread = Thread.new do
         loop do
@@ -65,17 +61,17 @@ module Merb
         end
       end
     end
-    
-    # Processes tasks in the Merb::Dispatcher.work_queue.
-    # 
-    # :api: private
+
+    # Processes tasks in the `Merb::Dispatcher.work_queue`.
+    #
+    # @api private
     def process_queue
       begin
         while blk = Merb::Dispatcher.work_queue.pop
            # we've been blocking on the queue waiting for an item sleeping.
-           # when someone pushes an item it wakes up this thread so we 
-           # immediately pass execution to the scheduler so we don't 
-           # accidentally run this block before the action finishes 
+           # when someone pushes an item it wakes up this thread so we
+           # immediately pass execution to the scheduler so we don't
+           # accidentally run this block before the action finishes
            # it's own processing
           Thread.pass
           blk.call
@@ -86,6 +82,6 @@ module Merb
         retry
       end
     end
-    
+
   end
 end

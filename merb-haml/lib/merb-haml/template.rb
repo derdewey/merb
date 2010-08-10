@@ -4,12 +4,12 @@ module Merb::Template
 
     # Defines a method for calling a specific HAML template.
     #
-    # ==== Parameters
-    # path<String>:: Path to the template file.
-    # name<~to_s>:: The name of the template method.
-    # locals<Array[Symbol]>:: A list of locals to assign from the args passed into the compiled template.
-    # mod<Class, Module>::
-    #   The class or module wherein this method should be defined.
+    # @param [String] path Path to the template file.
+    # @param [#to_s] name The name of the template method.
+    # @param [Array<Symbol>] locals A list of locals to assign from the
+    #   args passed into the compiled template.
+    # @param [Class, Module] mod The class or module wherein this method
+    #   should be defined.
     def self.compile_template(io, name, locals, mod)
       path = File.expand_path(io.path)
       config = (Merb::Plugins.config[:haml] || {}).inject({}) do |c, (k, v)|
@@ -22,10 +22,9 @@ module Merb::Template
     end
   
     module Mixin
-      # ==== Parameters
-      # string<String>:: The string to add to the HAML buffer.
-      # binding<Binding>::
-      #   Not used by HAML, but is necessary to conform to the concat_*
+      # @param [String] string The string to add to the HAML buffer.
+      # @param [Binding] binding Not used by HAML, but is necessary to
+      #   conform to the {Merb::AbstractController#concat concat}`_*`
       #   interface.
       def concat_haml(string, binding)
         haml_buffer.buffer << string
@@ -39,11 +38,10 @@ end
 module Haml
   class Engine
 
-    # ==== Parameters
-    # object<Class, Module>::
-    #   The class or module wherein this method should be defined.
-    # name<~to_s>:: The name of the template method.
-    # *local_names:: Local names to define in the HAML template.
+    # @param [Class, Module] object The class or module wherein this
+    #   method should be defined.
+    # @param [#to_s] name The name of the template method.
+    # @param *local_names Local names to define in the HAML template.
     def def_method(object, name, *local_names)
       method = object.is_a?(Module) ? :module_eval : :instance_eval
 

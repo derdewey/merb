@@ -1,11 +1,11 @@
-# Pinched from Tobias Luetke's "cacheable" rails plugin (http://github.com/tobi/cacheable/tree/master)
 require 'zlib' 
 require 'stringio'
 
 module Merb::Cache
-  # Store that compresses cached data using GZip.
-  # Usually wraps other stores and good for caching of
-  # large pages.
+  # Store that compresses cached data using GZip. Usually wraps other
+  # stores and good for caching of large pages.
+  #
+  # Pinched from Tobias Luetke's {http://github.com/tobi/cacheable/tree/master "cacheable" rails plugin}.
   class GzipStore < AbstractStrategyStore
     def writable?(key, parameters = {}, conditions = {})
       @stores.any? {|c| c.writable?(key, parameters, conditions)}
