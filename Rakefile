@@ -52,13 +52,6 @@ task :build do
   end
 end
 
-desc "Generate gemspecs for all merb stack gems"
-task :gemspec do
-  merb_stack_gems.each do |gem_info|
-    Dir.chdir(gem_info[:path]) { rake_command "gemspec" }
-  end
-end
-
 desc "Run specs for all merb stack gems"
 task :spec do
   # Omit the merb metagem, no specs there
