@@ -12,19 +12,19 @@ module Merb
         class SessionsController < Testing
     
           def index
-            request.session[:foo] = params[:foo]
+            session[:foo] = params[:foo]
             Merb::Config[:session_store]
           end
       
           def regenerate
-            request.session.regenerate
+            session.regenerate
           end
       
           def retrieve
           end
       
           def destroy
-            request.session.clear!
+            session.clear!
           end
     
         end
@@ -32,21 +32,21 @@ module Merb
         class MultipleSessionsController < Testing
     
           def store_in_cookie
-            request.session(:cookie)[:foo] = 'cookie-bar'
+            session(:cookie)[:foo] = 'cookie-bar'
           end
       
           def store_in_memory
-            request.session(:memory)[:foo] = 'memory-bar'
+            session(:memory)[:foo] = 'memory-bar'
           end
       
           def store_in_memcache
-            request.session(:memcache)[:foo] = 'memcache-bar'
+            session(:memcache)[:foo] = 'memcache-bar'
           end
       
           def store_in_multiple
-            request.session(:memcache)[:foo] = 'memcache-baz'
-            request.session(:memory)[:foo] = 'memory-baz'
-            request.session(:cookie)[:foo] = 'cookie-baz'
+            session(:memcache)[:foo] = 'memcache-baz'
+            session(:memory)[:foo] = 'memory-baz'
+            session(:cookie)[:foo] = 'cookie-baz'
           end
       
           def retrieve
